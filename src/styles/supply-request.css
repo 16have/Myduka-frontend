@@ -1,0 +1,24 @@
+/* Supply request pages (clerk + admin) */
+
+.request-list-section {
+  margin-top: 8px;
+}
+
+.request-list-section h2 {
+  font-size: 1.15rem;
+  margin: 0 0 12px;
+}
+
+.response-input {
+  width: 100%;
+  min-width: 140px;
+  padding: 6px 8px;
+  border: 1px solid var(--gray-200);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.decided-label {
+  color: var(--gray-500);
+  font-size: 0.85rem;
+}

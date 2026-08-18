@@ -1,0 +1,28 @@
+/* Payment management + WhatsApp fallback */
+
+.payment-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.whatsapp-fallback {
+  margin-top: 24px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-left: 4px solid #25d366;
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.whatsapp-fallback-text {
+  margin: 0;
+  color: var(--gray-500);
+  flex: 1;
+  min-width: 220px;
+}
