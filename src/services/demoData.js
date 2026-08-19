@@ -18,8 +18,14 @@ let supplyRequests = [
   { id: 1, product_name: "Cooking Oil 1L", product_id: 3, quantity: 24, reason: "Out of stock", notes: null, status: "Pending", admin_response: null, requested_by_name: "kosh", created_at: new Date().toISOString() },
 ];
 
+let spoilage = [
+  { id: 1, product_name: "Maize Flour 2kg", product_id: 1, quantity: 5, reason: "Expired", notes: "Batch expired", clerk_name: "kosh", date: new Date(Date.now() - 86400000 * 3).toISOString() },
+  { id: 2, product_name: "Sugar 1kg", product_id: 2, quantity: 2, reason: "Broken", notes: "Bag torn", clerk_name: "kosh", date: new Date(Date.now() - 86400000).toISOString() },
+];
+
 let nextTxnId = 3;
 let nextReqId = 2;
+let nextSpoilageId = 3;
 
 function stockStatus(p) {
   if (p.current_stock === 0) return "Out of Stock";
@@ -30,6 +36,12 @@ function stockStatus(p) {
 export const demoApi = {
   getInventory: async () =>
     products.map((p) => ({ ...p, stock_status: stockStatus(p) })),
+
+  getInventoryItem: async (id) => {
+    const p = products.find((x) => x.id === id);
+    if (!p) throw new Error("Product not found.");
+    return { ...p, stock_status: stockStatus(p) };
+  },
 
   getInventoryStats: async () => ({
     total_products: products.length,
@@ -73,8 +85,22 @@ export const demoApi = {
     }
     p.current_stock -= payload.quantity;
     p.updated_at = new Date().toISOString();
-    return { id: Date.now(), new_stock_level: p.current_stock };
+    const record = {
+      id: nextSpoilageId,
+      product_id: p.id,
+      product_name: p.name,
+      quantity: payload.quantity,
+      reason: payload.reason,
+      notes: payload.notes,
+      clerk_name: "kosh",
+      date: payload.date || new Date().toISOString(),
+    };
+    nextSpoilageId += 1;
+    spoilage.unshift(record);
+    return { id: record.id, new_stock_level: p.current_stock };
   },
+
+  getSpoilage: async () => spoilage,
 
   createSupplyRequest: async (payload) => {
     const p = products.find((x) => x.id === payload.product_id);

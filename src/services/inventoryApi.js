@@ -22,6 +22,7 @@ export function getInventory() {
 }
 
 export function getInventoryItem(id) {
+  if (DEMO) return demoApi.getInventoryItem(id);
   return apiRequest(`/inventory/${id}`);
 }
 
@@ -56,6 +57,7 @@ export function recordSpoilage(payload, userId) {
 }
 
 export function getSpoilage() {
+  if (DEMO) return demoApi.getSpoilage();
   return apiRequest("/spoilage");
 }
 
