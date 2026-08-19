@@ -1,0 +1,11 @@
+/* Inventory / stock page specific styles */
+
+.table-search {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Highlight low/out-of-stock rows subtly */
+.data-table tbody tr:hover {
+  background: var(--gray-50);
+}

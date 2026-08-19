@@ -1,0 +1,44 @@
+/* Dashboard statistics grid + action buttons */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 4px solid var(--green);
+}
+
+.stat-card--warning {
+  border-top-color: var(--amber);
+}
+
+.stat-card--danger {
+  border-top-color: var(--red);
+}
+
+.stat-card-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.stat-card-label {
+  color: var(--gray-500);
+  font-size: 0.85rem;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}

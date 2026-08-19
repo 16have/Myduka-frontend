@@ -1,0 +1,5 @@
+/* Spoilage page */
+
+.spoilage-form {
+  border-left: 4px solid var(--red);
+}
