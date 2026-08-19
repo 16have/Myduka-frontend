@@ -1,0 +1,98 @@
+.page {
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-slate-900);
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+  line-height: 1.6;
+}
+
+.authBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-primary-border);
+  background: var(--color-primary-light);
+}
+
+.authBannerText {
+  font-size: 0.875rem;
+  color: var(--color-primary-text);
+  line-height: 1.6;
+}
+
+.authBannerTitle {
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.code {
+  display: inline-block;
+  padding: 0.1rem 0.375rem;
+  border-radius: var(--radius-sm);
+  background: #a7f3d0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin: 2rem 0 0.75rem;
+}
+
+.capGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+}
+
+.capCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+}
+
+.capIcon {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--color-slate-100);
+  color: var(--color-text-muted);
+}
+
+.capLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-slate-800);
+}
+
+.capOwner {
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  margin-top: 0.2rem;
+}
