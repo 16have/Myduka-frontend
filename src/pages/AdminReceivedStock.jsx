@@ -4,6 +4,7 @@ import StatusBadge from "../components/StatusBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorMessage from "../components/ErrorMessage";
 import EmptyState from "../components/EmptyState";
+import BackButton from "../components/BackButton";
 import "../styles/tables.css";
 
 export default function AdminReceivedStock() {
@@ -45,6 +46,7 @@ export default function AdminReceivedStock() {
   return (
     <div className="page">
       <header className="page-header">
+        <BackButton to="/admin" />
         <h1>Received Stock</h1>
         <p className="page-subtitle">
           Every stock delivery recorded by clerks, with prices and payment

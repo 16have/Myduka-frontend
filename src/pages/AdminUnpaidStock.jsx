@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
 import { getUnpaidPayments, updatePaymentStatus } from "../services/inventoryApi";
-import { useApp } from "../context/AppContext";
+import { useAuth } from "@/lib/auth";
 import StatusBadge from "../components/StatusBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorMessage from "../components/ErrorMessage";
 import EmptyState from "../components/EmptyState";
 import WhatsAppFallback from "../components/WhatsAppFallback";
+import BackButton from "../components/BackButton";
 import "../styles/tables.css";
 import "../styles/payment.css";
 
 export default function AdminUnpaidStock() {
-  const { currentUser } = useApp();
+  const { user } = useAuth();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
   const [actionError, setActionError] = useState(null);
-  // Which transaction the admin wants to follow up on via WhatsApp.
   const [whatsappRow, setWhatsappRow] = useState(null);
 
   async function load() {
@@ -39,8 +39,7 @@ export default function AdminUnpaidStock() {
     setUpdatingId(id);
     setActionError(null);
     try {
-      const updated = await updatePaymentStatus(id, "Paid", currentUser.id);
-      // Remove from the unpaid list once the backend confirms the change.
+      const updated = await updatePaymentStatus(id, "Paid", user.id);
       setRows((prev) => prev.filter((r) => r.id !== updated.id));
       if (whatsappRow?.id === id) setWhatsappRow(null);
     } catch (err) {
@@ -56,6 +55,7 @@ export default function AdminUnpaidStock() {
   return (
     <div className="page">
       <header className="page-header">
+        <BackButton to="/admin" />
         <h1>Unpaid Stock &amp; Payment Management</h1>
         <p className="page-subtitle">
           Transactions awaiting payment. Mark them Paid once money is received.
@@ -127,7 +127,7 @@ export default function AdminUnpaidStock() {
           referenceNumber={whatsappRow.reference_number}
           product={whatsappRow.product_name}
           amount={whatsappRow.total_amount}
-          userName={currentUser.name}
+          userName={user.name}
           paymentStatus={whatsappRow.payment_status}
           issue="Following up on unpaid supplier stock"
         />

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { getInventory, recordSpoilage } from "../services/inventoryApi";
-import { useApp } from "../context/AppContext";
+import { useAuth } from "@/lib/auth";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorMessage from "../components/ErrorMessage";
+import BackButton from "../components/BackButton";
 import "../styles/forms.css";
 import "../styles/spoilage.css";
 
@@ -17,7 +18,7 @@ const EMPTY_FORM = {
 };
 
 export default function SpoilagePage() {
-  const { currentUser } = useApp();
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState({});
@@ -59,7 +60,6 @@ export default function SpoilagePage() {
       selectedProduct &&
       Number(form.quantity) > selectedProduct.current_stock
     ) {
-      // Stock can never go negative — checked here AND on the backend.
       errs.quantity = `Only ${selectedProduct.current_stock} unit(s) available.`;
     }
     if (!REASONS.includes(form.reason)) errs.reason = "Invalid reason.";
@@ -87,11 +87,10 @@ export default function SpoilagePage() {
         notes: form.notes.trim() || null,
         date: form.date,
       };
-      const result = await recordSpoilage(payload, currentUser.id);
+      const result = await recordSpoilage(payload, user.id);
       setSuccess(
         `Spoilage recorded. ${selectedProduct?.name} stock is now ${result.new_stock_level}.`
       );
-      // Refresh local stock figure so a second submission validates correctly.
       setProducts((prev) =>
         prev.map((p) =>
           p.id === payload.product_id
@@ -113,6 +112,7 @@ export default function SpoilagePage() {
   return (
     <div className="page">
       <header className="page-header">
+        <BackButton to="/clerk" />
         <h1>Record Spoilage</h1>
         <p className="page-subtitle">
           Spoiled items are deducted from stock immediately.

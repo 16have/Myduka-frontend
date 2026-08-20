@@ -1,29 +1,33 @@
-import { useApp } from "../context/AppContext";
+import { useLocation, useNavigate } from "react-router";
+import { useAuth } from "@/lib/auth";
 
-// Top navigation. Black background per the MyDuka brand (green/black/white).
-export default function Navbar({ page, onNavigate }) {
-  const { currentUser, role, setRole } = useApp();
+export default function Navbar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
+
+  const role = user?.role || "clerk";
 
   const clerkLinks = [
-    { key: "clerk-dashboard", label: "Dashboard" },
-    { key: "receive-stock", label: "Receive Stock" },
-    { key: "stock", label: "Stock" },
-    { key: "spoilage", label: "Spoilage" },
-    { key: "supply-requests", label: "Supply Requests" },
+    { key: "/clerk", label: "Dashboard" },
+    { key: "/clerk/receive-stock", label: "Receive Stock" },
+    { key: "/clerk/stock", label: "Stock" },
+    { key: "/clerk/spoilage", label: "Spoilage" },
+    { key: "/clerk/supply-requests", label: "Supply Requests" },
   ];
 
   const adminLinks = [
-    { key: "admin-dashboard", label: "Dashboard" },
-    { key: "admin-received", label: "Received Stock" },
-    { key: "admin-unpaid", label: "Unpaid / Payments" },
-    { key: "admin-supply", label: "Supply Requests" },
+    { key: "/admin", label: "Dashboard" },
+    { key: "/admin/received", label: "Received Stock" },
+    { key: "/admin/unpaid", label: "Unpaid / Payments" },
+    { key: "/admin/supply", label: "Supply Requests" },
   ];
 
   const links = role === "admin" ? adminLinks : clerkLinks;
 
   return (
     <nav className="navbar">
-      <div className="navbar-brand" onClick={() => onNavigate(links[0].key)}>
+      <div className="navbar-brand" onClick={() => navigate(links[0].key)}>
         <span className="navbar-logo">My</span>Duka
       </div>
 
@@ -31,8 +35,10 @@ export default function Navbar({ page, onNavigate }) {
         {links.map((link) => (
           <li key={link.key}>
             <button
-              className={`navbar-link ${page === link.key ? "active" : ""}`}
-              onClick={() => onNavigate(link.key)}
+              className={`navbar-link ${
+                location.pathname === link.key ? "active" : ""
+              }`}
+              onClick={() => navigate(link.key)}
             >
               {link.label}
             </button>
@@ -41,20 +47,7 @@ export default function Navbar({ page, onNavigate }) {
       </ul>
 
       <div className="navbar-user">
-        <span className="navbar-username">{currentUser.name}</span>
-        {/* Role switcher — replace with real auth in the group project */}
-        <select
-          className="navbar-role-select"
-          value={role}
-          onChange={(e) => {
-            const newRole = e.target.value;
-            setRole(newRole);
-            onNavigate(newRole === "admin" ? "admin-dashboard" : "clerk-dashboard");
-          }}
-        >
-          <option value="clerk">Clerk</option>
-          <option value="admin">Admin</option>
-        </select>
+        <span className="navbar-username">{user?.name}</span>
       </div>
     </nav>
   );

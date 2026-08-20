@@ -33,7 +33,7 @@ export function getInventoryStats() {
 /* --------------------------- Receiving stock ---------------------------- */
 
 export function receiveStock(payload, userId) {
-  if (DEMO) return demoApi.receiveStock(payload);
+  if (DEMO) return demoApi.receiveStock(payload, userId);
   return apiRequest("/stock/receive", {
     method: "POST",
     body: JSON.stringify(payload),
@@ -48,7 +48,7 @@ export function getReceivedStock() {
 /* ------------------------------ Spoilage -------------------------------- */
 
 export function recordSpoilage(payload, userId) {
-  if (DEMO) return demoApi.recordSpoilage(payload);
+  if (DEMO) return demoApi.recordSpoilage(payload, userId);
   return apiRequest("/spoilage", {
     method: "POST",
     body: JSON.stringify(payload),
@@ -64,7 +64,7 @@ export function getSpoilage() {
 /* --------------------------- Supply requests ---------------------------- */
 
 export function createSupplyRequest(payload, userId) {
-  if (DEMO) return demoApi.createSupplyRequest(payload);
+  if (DEMO) return demoApi.createSupplyRequest(payload, userId);
   return apiRequest("/supply-requests", {
     method: "POST",
     body: JSON.stringify(payload),
@@ -73,10 +73,9 @@ export function createSupplyRequest(payload, userId) {
 }
 
 export function getSupplyRequests(userId = null) {
-  if (DEMO) return demoApi.getSupplyRequests();
-  // Clerks see only their own requests; admins see all.
-  const query = userId ? `?requested_by=${userId}` : "";
-  return apiRequest(`/supply-requests${query}`);
+  if (DEMO) return demoApi.getSupplyRequests(userId);
+  // Clerks and admins both see all requests.
+  return apiRequest("/supply-requests");
 }
 
 export function updateSupplyRequest(id, payload, userId) {

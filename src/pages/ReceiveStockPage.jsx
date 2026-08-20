@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { getInventory, receiveStock } from "../services/inventoryApi";
-import { useApp } from "../context/AppContext";
+import { useAuth } from "@/lib/auth";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorMessage from "../components/ErrorMessage";
 import WhatsAppFallback from "../components/WhatsAppFallback";
+import BackButton from "../components/BackButton";
 import "../styles/forms.css";
 
 const EMPTY_FORM = {
@@ -18,7 +19,7 @@ const EMPTY_FORM = {
 };
 
 export default function ReceiveStockPage() {
-  const { currentUser } = useApp();
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState({});
@@ -27,8 +28,6 @@ export default function ReceiveStockPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(null);
   const [submitError, setSubmitError] = useState(null);
-  // When payment is "Not Paid" we show the WhatsApp fallback after saving,
-  // so the clerk can immediately follow up on the unpaid delivery.
   const [lastTransaction, setLastTransaction] = useState(null);
 
   useEffect(() => {
@@ -51,7 +50,6 @@ export default function ReceiveStockPage() {
     setFormErrors((errs) => ({ ...errs, [name]: null }));
   }
 
-  // Client-side validation mirrors the backend rules (backend still re-validates).
   function validate() {
     const errs = {};
     if (!form.product_id) errs.product_id = "Please select a product.";
@@ -91,7 +89,7 @@ export default function ReceiveStockPage() {
         date_received: form.date_received,
         notes: form.notes.trim() || null,
       };
-      const transaction = await receiveStock(payload, currentUser.id);
+      const transaction = await receiveStock(payload, user.id);
       const product = products.find((p) => p.id === payload.product_id);
       setSuccess(
         `Stock received. Reference ${transaction.reference_number}. New stock level: ${transaction.new_stock_level}.`
@@ -113,6 +111,7 @@ export default function ReceiveStockPage() {
   return (
     <div className="page">
       <header className="page-header">
+        <BackButton to="/clerk" />
         <h1>Receive Stock</h1>
         <p className="page-subtitle">
           Record products received from a supplier. Stock increases immediately.
@@ -262,7 +261,7 @@ export default function ReceiveStockPage() {
           referenceNumber={lastTransaction.reference_number}
           product={lastTransaction.productName}
           amount={lastTransaction.total_amount}
-          userName={currentUser.name}
+          userName={user.name}
           paymentStatus="Not Paid"
           issue="Stock received but payment is still pending"
         />

@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { getInventoryStats, getInventory } from "../services/inventoryApi";
 import StatCard from "../components/StatCard";
 import StatusBadge from "../components/StatusBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorMessage from "../components/ErrorMessage";
 import EmptyState from "../components/EmptyState";
+import BackButton from "../components/BackButton";
 import "../styles/dashboard.css";
 import "../styles/tables.css";
 
-export default function AdminDashboard({ onNavigate }) {
+export default function AdminDashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [attention, setAttention] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +26,6 @@ export default function AdminDashboard({ onNavigate }) {
         getInventory(),
       ]);
       setStats(statsData);
-      // Products needing attention: low or out of stock.
       setAttention(
         inventory.filter((i) => i.stock_status !== "In Stock")
       );
@@ -44,6 +46,7 @@ export default function AdminDashboard({ onNavigate }) {
   return (
     <div className="page">
       <header className="page-header">
+        <BackButton to="/admin" />
         <h1>Admin Inventory Dashboard</h1>
         <p className="page-subtitle">
           Monitor stock, payments and supply requests across the shop.
@@ -78,19 +81,19 @@ export default function AdminDashboard({ onNavigate }) {
       <div className="dashboard-actions">
         <button
           className="btn btn-primary btn-lg"
-          onClick={() => onNavigate("admin-received")}
+          onClick={() => navigate("/admin/received")}
         >
           View Received Stock
         </button>
         <button
           className="btn btn-outline btn-lg"
-          onClick={() => onNavigate("admin-unpaid")}
+          onClick={() => navigate("/admin/unpaid")}
         >
           Manage Payments
         </button>
         <button
           className="btn btn-outline btn-lg"
-          onClick={() => onNavigate("admin-supply")}
+          onClick={() => navigate("/admin/supply")}
         >
           Review Supply Requests
         </button>

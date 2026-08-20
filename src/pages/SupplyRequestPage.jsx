@@ -4,11 +4,12 @@ import {
   createSupplyRequest,
   getSupplyRequests,
 } from "../services/inventoryApi";
-import { useApp } from "../context/AppContext";
+import { useAuth } from "@/lib/auth";
 import StatusBadge from "../components/StatusBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorMessage from "../components/ErrorMessage";
 import EmptyState from "../components/EmptyState";
+import BackButton from "../components/BackButton";
 import "../styles/forms.css";
 import "../styles/tables.css";
 import "../styles/supply-request.css";
@@ -16,7 +17,7 @@ import "../styles/supply-request.css";
 const EMPTY_FORM = { product_id: "", quantity: "", reason: "", notes: "" };
 
 export default function SupplyRequestPage() {
-  const { currentUser } = useApp();
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [requests, setRequests] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -33,7 +34,7 @@ export default function SupplyRequestPage() {
     try {
       const [productData, requestData] = await Promise.all([
         getInventory(),
-        getSupplyRequests(currentUser.id), // clerk sees their own requests
+        getSupplyRequests(),
       ]);
       setProducts(productData);
       setRequests(requestData);
@@ -46,7 +47,7 @@ export default function SupplyRequestPage() {
 
   useEffect(() => {
     load();
-  }, [currentUser.id]);
+  }, [user.id]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -82,7 +83,7 @@ export default function SupplyRequestPage() {
         reason: form.reason.trim(),
         notes: form.notes.trim() || null,
       };
-      const created = await createSupplyRequest(payload, currentUser.id);
+      const created = await createSupplyRequest(payload, user.id);
       setRequests((prev) => [created, ...prev]);
       setSuccess(`Supply request #${created.id} submitted (status: Pending).`);
       setForm(EMPTY_FORM);
@@ -99,6 +100,7 @@ export default function SupplyRequestPage() {
   return (
     <div className="page">
       <header className="page-header">
+        <BackButton to="/clerk" />
         <h1>Supply Requests</h1>
         <p className="page-subtitle">
           Ask the admin to order more stock. New requests start as Pending.
@@ -179,11 +181,11 @@ export default function SupplyRequestPage() {
       </form>
 
       <section className="request-list-section">
-        <h2>My Submitted Requests</h2>
+        <h2>All Supply Requests</h2>
         {requests.length === 0 ? (
           <EmptyState
             title="No requests yet"
-            message="Requests you submit will appear here with their status."
+            message="Supply requests will appear here."
           />
         ) : (
           <div className="table-wrapper">
@@ -196,6 +198,7 @@ export default function SupplyRequestPage() {
                   <th>Reason</th>
                   <th>Status</th>
                   <th>Admin Response</th>
+                  <th>Requested By</th>
                   <th>Date</th>
                 </tr>
               </thead>
@@ -212,6 +215,7 @@ export default function SupplyRequestPage() {
                     <td data-label="Admin Response">
                       {req.admin_response || "—"}
                     </td>
+                    <td data-label="Requested By">{req.requested_by_name}</td>
                     <td data-label="Date">
                       {new Date(req.created_at).toLocaleDateString()}
                     </td>

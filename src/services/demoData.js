@@ -2,6 +2,18 @@
 // where no Flask backend exists). Local development uses the real API.
 // It mimics the exact response shapes of the Flask endpoints.
 
+// Demo users — matches AppContext.jsx demo users.
+const USERS = {
+  1: { id: 1, name: "admin", role: "admin" },
+  2: { id: 2, name: "kosh", role: "clerk" },
+  3: { id: 3, name: "Grace", role: "clerk" },
+  4: { id: 4, name: "John", role: "clerk" },
+};
+
+function getUser(userId) {
+  return USERS[userId] || { id: userId, name: `User ${userId}`, role: "clerk" };
+}
+
 let products = [
   { id: 1, name: "Maize Flour 2kg", category: "Flour", buying_price: 140, selling_price: 180, current_stock: 45, minimum_stock_level: 10, updated_at: new Date().toISOString() },
   { id: 2, name: "Sugar 1kg", category: "Baking", buying_price: 120, selling_price: 155, current_stock: 8, minimum_stock_level: 15, updated_at: new Date().toISOString() },
@@ -15,7 +27,10 @@ let transactions = [
 ];
 
 let supplyRequests = [
-  { id: 1, product_name: "Cooking Oil 1L", product_id: 3, quantity: 24, reason: "Out of stock", notes: null, status: "Pending", admin_response: null, requested_by_name: "kosh", created_at: new Date().toISOString() },
+  { id: 1, product_name: "Cooking Oil 1L", product_id: 3, quantity: 24, reason: "Out of stock", notes: null, status: "Pending", admin_response: null, requested_by_id: 2, requested_by_name: "kosh", created_at: new Date(Date.now() - 86400000 * 2).toISOString() },
+  { id: 2, product_name: "Maize Flour 2kg", product_id: 1, quantity: 50, reason: "Weekend promotion", notes: "Urgent restock needed", status: "Pending", admin_response: null, requested_by_id: 3, requested_by_name: "Grace", created_at: new Date(Date.now() - 86400000).toISOString() },
+  { id: 3, product_name: "Sugar 1kg", product_id: 2, quantity: 30, reason: "Low stock", notes: null, status: "Approved", admin_response: "Order placed with supplier", requested_by_id: 4, requested_by_name: "John", created_at: new Date(Date.now() - 43200000).toISOString() },
+  { id: 4, product_name: "Rice 5kg", product_id: 4, quantity: 15, reason: "New product line", notes: "First batch", status: "Declined", admin_response: "Not in budget", requested_by_id: 2, requested_by_name: "kosh", created_at: new Date(Date.now() - 3600000).toISOString() },
 ];
 
 let spoilage = [
@@ -52,12 +67,13 @@ export const demoApi = {
     pending_supply_requests: supplyRequests.filter((r) => r.status === "Pending").length,
   }),
 
-  receiveStock: async (payload) => {
+  receiveStock: async (payload, userId) => {
     const p = products.find((x) => x.id === payload.product_id);
     p.current_stock += payload.quantity;
     p.buying_price = payload.buying_price;
     p.selling_price = payload.selling_price;
     p.updated_at = new Date().toISOString();
+    const user = getUser(userId);
     const txn = {
       id: nextTxnId,
       reference_number: `RCV-${String(nextTxnId).padStart(4, "0")}`,
@@ -67,7 +83,7 @@ export const demoApi = {
       selling_price: payload.selling_price,
       supplier: payload.supplier,
       payment_status: payload.payment_status,
-      clerk_name: "kosh",
+      clerk_name: user.name,
       total_amount: payload.quantity * payload.buying_price,
       created_at: new Date().toISOString(),
     };
@@ -78,13 +94,14 @@ export const demoApi = {
 
   getReceivedStock: async () => transactions,
 
-  recordSpoilage: async (payload) => {
+  recordSpoilage: async (payload, userId) => {
     const p = products.find((x) => x.id === payload.product_id);
     if (payload.quantity > p.current_stock) {
       throw new Error("Spoilage quantity exceeds available stock.");
     }
     p.current_stock -= payload.quantity;
     p.updated_at = new Date().toISOString();
+    const user = getUser(userId);
     const record = {
       id: nextSpoilageId,
       product_id: p.id,
@@ -92,7 +109,7 @@ export const demoApi = {
       quantity: payload.quantity,
       reason: payload.reason,
       notes: payload.notes,
-      clerk_name: "kosh",
+      clerk_name: user.name,
       date: payload.date || new Date().toISOString(),
     };
     nextSpoilageId += 1;
@@ -102,8 +119,9 @@ export const demoApi = {
 
   getSpoilage: async () => spoilage,
 
-  createSupplyRequest: async (payload) => {
+  createSupplyRequest: async (payload, userId) => {
     const p = products.find((x) => x.id === payload.product_id);
+    const user = getUser(userId);
     const req = {
       id: nextReqId,
       product_id: p.id,
@@ -113,7 +131,8 @@ export const demoApi = {
       notes: payload.notes,
       status: "Pending",
       admin_response: null,
-      requested_by_name: "kosh",
+      requested_by_id: user.id,
+      requested_by_name: user.name,
       created_at: new Date().toISOString(),
     };
     nextReqId += 1;
@@ -121,12 +140,19 @@ export const demoApi = {
     return req;
   },
 
-  getSupplyRequests: async () => supplyRequests,
+  getSupplyRequests: async (userId) => {
+    if (!userId) return supplyRequests;
+    return supplyRequests.filter((r) => r.requested_by_id === userId);
+  },
 
   updateSupplyRequest: async (id, payload) => {
     const req = supplyRequests.find((r) => r.id === id);
-    req.status = payload.status;
-    req.admin_response = payload.admin_response;
+    if (!req) throw new Error("Request not found.");
+    if (payload.quantity !== undefined) req.quantity = payload.quantity;
+    if (payload.reason !== undefined) req.reason = payload.reason;
+    if (payload.notes !== undefined) req.notes = payload.notes;
+    if (payload.status !== undefined) req.status = payload.status;
+    if (payload.admin_response !== undefined) req.admin_response = payload.admin_response;
     return req;
   },
 

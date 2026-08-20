@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { getInventoryStats } from "../services/inventoryApi";
-import { useApp } from "../context/AppContext";
+import { useAuth } from "@/lib/auth";
 import StatCard from "../components/StatCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorMessage from "../components/ErrorMessage";
+import BackButton from "../components/BackButton";
 import "../styles/dashboard.css";
 
-export default function ClerkDashboard({ onNavigate }) {
-  const { currentUser } = useApp();
+export default function ClerkDashboard() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,9 +35,10 @@ export default function ClerkDashboard({ onNavigate }) {
   return (
     <div className="page">
       <header className="page-header">
+        <BackButton to="/login" />
         <h1>Inventory Dashboard</h1>
         <p className="page-subtitle">
-          Welcome back, <strong>{currentUser.name}</strong>. Here is the stock
+          Welcome back, <strong>{user?.name}</strong>. Here is the stock
           overview.
         </p>
       </header>
@@ -72,19 +76,19 @@ export default function ClerkDashboard({ onNavigate }) {
           <div className="dashboard-actions">
             <button
               className="btn btn-primary btn-lg"
-              onClick={() => onNavigate("receive-stock")}
+              onClick={() => navigate("/clerk/receive-stock")}
             >
               Receive Stock
             </button>
             <button
               className="btn btn-outline btn-lg"
-              onClick={() => onNavigate("spoilage")}
+              onClick={() => navigate("/clerk/spoilage")}
             >
               Record Spoilage
             </button>
             <button
               className="btn btn-outline btn-lg"
-              onClick={() => onNavigate("supply-requests")}
+              onClick={() => navigate("/clerk/supply-requests")}
             >
               Request Supply
             </button>

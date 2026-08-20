@@ -4,6 +4,7 @@ import StatusBadge from "../components/StatusBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorMessage from "../components/ErrorMessage";
 import EmptyState from "../components/EmptyState";
+import BackButton from "../components/BackButton";
 import "../styles/tables.css";
 import "../styles/inventory.css";
 
@@ -47,6 +48,7 @@ export default function StockPage() {
   return (
     <div className="page">
       <header className="page-header">
+        <BackButton to="/clerk" />
         <h1>Current Stock</h1>
         <p className="page-subtitle">
           Live stock levels for every product, straight from the database.
