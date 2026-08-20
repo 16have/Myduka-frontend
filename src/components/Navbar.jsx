@@ -8,6 +8,9 @@ export default function Navbar() {
 
   const role = user?.role || "clerk";
 
+
+  
+
   const clerkLinks = [
     { key: "/clerk", label: "Dashboard" },
     { key: "/clerk/receive-stock", label: "Receive Stock" },
