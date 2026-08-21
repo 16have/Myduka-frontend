@@ -5,6 +5,7 @@ import Layout from '@/components/Layout'
 import Login from '@/pages/Login'
 import RegisterAdmin from '@/pages/RegisterAdmin'
 import AdminManagement from '@/pages/merchant/AdminManagement'
+import MerchantDashboard from '@/pages/merchant/MerchantDashboard'
 import ClerkManagement from '@/pages/admin/ClerkManagement'
 import ClerkDashboard from '@/pages/ClerkDashboard'
 import AdminDashboard from '@/pages/AdminDashboard'
@@ -15,38 +16,11 @@ import StockPage from '@/pages/StockPage'
 import ReceiveStockPage from '@/pages/ReceiveStockPage'
 import SpoilagePage from '@/pages/SpoilagePage'
 import SupplyRequestPage from '@/pages/SupplyRequestPage'
-import Navbar from '@/components/Navbar'
 import "./styles/main.css"
 
 function RootRedirect() {
   const { user } = useAuth()
   return <Navigate to={user ? homeFor(user.role) : '/login'} replace />
-}
-
-function ClerkLayout() {
-  return (
-    <RequireRole roles={['clerk']}>
-      <>
-        <Navbar />
-        <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px 64px' }}>
-          <Outlet />
-        </main>
-      </>
-    </RequireRole>
-  )
-}
-
-function AdminLayout() {
-  return (
-    <RequireRole roles={['admin']}>
-      <>
-        <Navbar />
-        <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px 64px' }}>
-          <Outlet />
-        </main>
-      </>
-    </RequireRole>
-  )
 }
 
 export default function App() {
@@ -57,21 +31,6 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin/register" element={<RegisterAdmin />} />
 
-        <Route path="/clerk" element={<ClerkLayout />}>
-          <Route index element={<ClerkDashboard />} />
-          <Route path="stock" element={<StockPage />} />
-          <Route path="receive-stock" element={<ReceiveStockPage />} />
-          <Route path="spoilage" element={<SpoilagePage />} />
-          <Route path="supply-requests" element={<SupplyRequestPage />} />
-        </Route>
-
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="received" element={<AdminReceivedStock />} />
-          <Route path="unpaid" element={<AdminUnpaidStock />} />
-          <Route path="supply" element={<AdminSupplyRequests />} />
-        </Route>
-
         <Route
           element={
             <RequireAuth>
@@ -79,6 +38,14 @@ export default function App() {
             </RequireAuth>
           }
         >
+          <Route
+            path="/merchant"
+            element={
+              <RequireRole roles={['merchant']}>
+                <MerchantDashboard />
+              </RequireRole>
+            }
+          />
           <Route
             path="/merchant/admins"
             element={
@@ -95,6 +62,15 @@ export default function App() {
               </RequireRole>
             }
           />
+          <Route path="/clerk" element={<RequireRole roles={['clerk']}><ClerkDashboard /></RequireRole>} />
+          <Route path="/clerk/stock" element={<RequireRole roles={['clerk']}><StockPage /></RequireRole>} />
+          <Route path="/clerk/receive-stock" element={<RequireRole roles={['clerk']}><ReceiveStockPage /></RequireRole>} />
+          <Route path="/clerk/spoilage" element={<RequireRole roles={['clerk']}><SpoilagePage /></RequireRole>} />
+          <Route path="/clerk/supply-requests" element={<RequireRole roles={['clerk']}><SupplyRequestPage /></RequireRole>} />
+          <Route path="/admin" element={<RequireRole roles={['admin']}><AdminDashboard /></RequireRole>} />
+          <Route path="/admin/received" element={<RequireRole roles={['admin']}><AdminReceivedStock /></RequireRole>} />
+          <Route path="/admin/unpaid" element={<RequireRole roles={['admin']}><AdminUnpaidStock /></RequireRole>} />
+          <Route path="/admin/supply" element={<RequireRole roles={['admin']}><AdminSupplyRequests /></RequireRole>} />
         </Route>
         <Route path="*" element={<RootRedirect />} />
       </Routes>

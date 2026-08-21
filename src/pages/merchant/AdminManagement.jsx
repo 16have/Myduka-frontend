@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { MailPlus, Loader2, Copy, Check, ExternalLink, UserCog, UserCheck, MailWarning } from 'lucide-react'
 import { toast } from 'sonner'
 import UserTable from '@/components/UserTable'
 import * as api from '@/lib/api'
@@ -74,19 +73,16 @@ export default function AdminManagement() {
           <h1 className={s.pageTitle}>Admin Management</h1>
           <p className={s.pageDesc}>Invite store admins by email, and activate, deactivate or remove their accounts.</p>
         </div>
-        <button className={s.primaryBtn} onClick={() => setInviteOpen(true)}>
-          <MailPlus size={15} /> Invite Admin
-        </button>
+        <button className={s.primaryBtn} onClick={() => setInviteOpen(true)}>Invite Admin</button>
       </div>
 
       <div className={s.statsGrid}>
         {[
-          { icon: UserCog, label: 'Total admins', value: admins.length },
-          { icon: UserCheck, label: 'Active admins', value: activeCount },
-          { icon: MailWarning, label: 'Pending invitations', value: pendingInvites },
-        ].map(({ icon: Icon, label, value }) => (
+          { label: 'Total admins', value: admins.length },
+          { label: 'Active admins', value: activeCount },
+          { label: 'Pending invitations', value: pendingInvites },
+        ].map(({ label, value }) => (
           <div key={label} className={s.statCard}>
-            <div className={s.statIcon}><Icon size={18} /></div>
             <div>
               <p className={s.statValue}>{loading ? '—' : value}</p>
               <p className={s.statLabel}>{label}</p>
@@ -98,7 +94,7 @@ export default function AdminManagement() {
       <div className={s.section}>
         <h2 className={s.sectionTitle}>Store admins</h2>
         {loading
-          ? <div className={s.loadingBox}><Loader2 size={22} className={s.spinner} /></div>
+          ? <div className={s.loadingBox}>Loading admins...</div>
           : <UserTable users={admins} noun="admin" busyId={busyId} onToggleActive={toggleActive} onDelete={remove} />}
       </div>
 
@@ -127,7 +123,7 @@ export default function AdminManagement() {
                   <td>
                     {inv.status === 'pending' && (
                       <button className={s.openBtn} onClick={() => navigate(`/admin/register?token=${inv.token}`)}>
-                        <ExternalLink size={13} /> Open
+                        Open
                       </button>
                     )}
                   </td>
@@ -158,7 +154,7 @@ export default function AdminManagement() {
                 <div className={s.dialogFooter}>
                   <button type="button" className={s.cancelBtn} onClick={closeDialog}>Cancel</button>
                   <button type="submit" className={s.submitBtn} disabled={inviting}>
-                    {inviting && <Loader2 size={14} className={s.spinner} />} Send invitation
+                    {inviting ? 'Sending...' : 'Send invitation'}
                   </button>
                 </div>
               </form>
@@ -172,13 +168,13 @@ export default function AdminManagement() {
                   <div className={s.inputRow}>
                     <input className={`${s.input} ${s.inputMono}`} readOnly value={inviteLink(issued)} onFocus={e => e.target.select()} />
                     <button type="button" className={s.copyBtn} onClick={() => copyLink(issued)}>
-                      {copied ? <Check size={15} style={{ color: 'var(--color-primary)' }} /> : <Copy size={15} />}
+                      {copied ? 'Copied' : 'Copy'}
                     </button>
                   </div>
                 </div>
                 <div className={s.dialogFooter}>
                   <button type="button" className={s.outlineBtn} onClick={() => navigate(`/admin/register?token=${issued.token}`)}>
-                    <ExternalLink size={14} /> Open registration page
+                    Open registration page
                   </button>
                   <button type="button" className={s.doneBtn} onClick={closeDialog}>Done</button>
                 </div>

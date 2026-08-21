@@ -1,4 +1,3 @@
-import { PackagePlus, Boxes, Trash2, Truck, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import s from './ClerkWorkspace.module.css'
 
@@ -19,7 +18,6 @@ export default function ClerkWorkspace() {
       </p>
 
       <div className={s.authBanner}>
-        <CheckCircle2 size={18} style={{ flexShrink: 0, marginTop: 2, color: 'var(--color-primary)' }} />
         <div className={s.authBannerText}>
           <p className={s.authBannerTitle}>Authentication is working.</p>
           <p>

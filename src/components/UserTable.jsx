@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react'
-import { MoreHorizontal, UserCheck, UserX, Trash2 } from 'lucide-react'
 import s from './UserTable.module.css'
 
 function ActionMenu({ user, noun, busy, onToggleActive, onDelete }) {
@@ -15,16 +14,16 @@ function ActionMenu({ user, noun, busy, onToggleActive, onDelete }) {
   return (
     <div className={s.dropdown} ref={ref}>
       <button className={s.menuBtn} disabled={busy} onClick={() => setOpen(v => !v)}>
-        <MoreHorizontal size={16} />
+        Actions
       </button>
       {open && (
         <div className={s.dropdownMenu}>
           <button className={s.dropdownItem} onClick={() => { setOpen(false); onToggleActive(user) }}>
-            {user.is_active ? <><UserX size={14} /> Deactivate {noun}</> : <><UserCheck size={14} /> Reactivate {noun}</>}
+            {user.is_active ? `Deactivate ${noun}` : `Reactivate ${noun}`}
           </button>
           <div className={s.dropdownSep} />
           <button className={`${s.dropdownItem} ${s.dropdownItemDanger}`} onClick={() => { setOpen(false); onDelete(user) }}>
-            <Trash2 size={14} /> Delete permanently
+            Delete permanently
           </button>
         </div>
       )}

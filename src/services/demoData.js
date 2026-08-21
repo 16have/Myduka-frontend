@@ -4,10 +4,10 @@
 
 // Demo users — matches AppContext.jsx demo users.
 const USERS = {
-  1: { id: 1, name: "admin", role: "admin" },
-  2: { id: 2, name: "kosh", role: "clerk" },
-  3: { id: 3, name: "Grace", role: "clerk" },
-  4: { id: 4, name: "John", role: "clerk" },
+  1: { id: 1, name: "Elias", role: "merchant" },
+  2: { id: 2, name: "George", role: "admin" },
+  3: { id: 3, name: "Kelvin Tullo", role: "clerk" },
+  4: { id: 4, name: "Joshua", role: "clerk" },
 };
 
 function getUser(userId) {
@@ -28,8 +28,6 @@ let transactions = [
 
 let supplyRequests = [
   { id: 1, product_name: "Cooking Oil 1L", product_id: 3, quantity: 24, reason: "Out of stock", notes: null, status: "Pending", admin_response: null, requested_by_id: 2, requested_by_name: "kosh", created_at: new Date(Date.now() - 86400000 * 2).toISOString() },
-  { id: 2, product_name: "Maize Flour 2kg", product_id: 1, quantity: 50, reason: "Weekend promotion", notes: "Urgent restock needed", status: "Pending", admin_response: null, requested_by_id: 3, requested_by_name: "Grace", created_at: new Date(Date.now() - 86400000).toISOString() },
-  { id: 3, product_name: "Sugar 1kg", product_id: 2, quantity: 30, reason: "Low stock", notes: null, status: "Approved", admin_response: "Order placed with supplier", requested_by_id: 4, requested_by_name: "John", created_at: new Date(Date.now() - 43200000).toISOString() },
   { id: 4, product_name: "Rice 5kg", product_id: 4, quantity: 15, reason: "New product line", notes: "First batch", status: "Declined", admin_response: "Not in budget", requested_by_id: 2, requested_by_name: "kosh", created_at: new Date(Date.now() - 3600000).toISOString() },
 ];
 
@@ -39,7 +37,7 @@ let spoilage = [
 ];
 
 let nextTxnId = 3;
-let nextReqId = 2;
+let nextReqId = 5;
 let nextSpoilageId = 3;
 
 function stockStatus(p) {

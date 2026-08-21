@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
-import { Store, Loader2, ShieldX, MailCheck, Eye, EyeOff } from 'lucide-react'
 import * as api from '@/lib/api'
 import s from './RegisterAdmin.module.css'
 
@@ -46,7 +45,6 @@ export default function RegisterAdmin() {
     <div className={s.page}>
       <div className={s.card}>
         <div className={s.cardLogo}>
-          <div className={s.cardLogoIcon}><Store size={18} /></div>
           <div>
             <p className={s.cardLogoName}>MyDuka</p>
             <p className={s.cardLogoSub}>Admin invitation</p>
@@ -55,14 +53,12 @@ export default function RegisterAdmin() {
 
         {state.kind === 'checking' && (
           <div className={s.checking}>
-            <Loader2 size={24} className={s.spinner} />
             <p>Verifying your invitation…</p>
           </div>
         )}
 
         {state.kind === 'invalid' && (
           <div className={s.invalid}>
-            <div className={s.invalidIcon}><ShieldX size={24} /></div>
             <h1 className={s.invalidTitle}>Invitation not valid</h1>
             <p className={s.invalidReason}>{state.reason}</p>
             <Link to="/login"><button className={s.backBtn}>Back to sign in</button></Link>
@@ -72,7 +68,6 @@ export default function RegisterAdmin() {
         {state.kind === 'ready' && (
           <>
             <div className={s.inviteBanner}>
-              <MailCheck size={16} style={{ flexShrink: 0, marginTop: 2 }} />
               <p>
                 You've been invited to MyDuka as a <strong>Store Admin</strong> for{' '}
                 <strong>{state.email}</strong>. Set your name and password to activate the account.
@@ -93,7 +88,7 @@ export default function RegisterAdmin() {
                     type={showPassword ? 'text' : 'password'} value={password}
                     onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" required minLength={8} />
                   <button type="button" className={s.eyeBtn} onClick={() => setShowPassword(v => !v)}>
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showPassword ? 'Hide' : 'Show'}
                   </button>
                 </div>
               </div>
@@ -103,8 +98,7 @@ export default function RegisterAdmin() {
                   value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Repeat your password" required />
               </div>
               <button type="submit" className={s.submitBtn} disabled={loading}>
-                {loading && <Loader2 size={16} className={s.spinner} />}
-                Activate admin account
+                {loading ? 'Activating...' : 'Activate admin account'}
               </button>
             </form>
           </>

@@ -3,3 +3,39 @@
 .spoilage-form {
   border-left: 4px solid var(--red);
 }
+
+.spoilage-history {
+  margin-top: 2.5rem;
+}
+
+.spoilage-history-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.spoilage-history-heading h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.2rem;
+}
+
+.spoilage-history-heading p {
+  margin: 0;
+  color: var(--gray-500);
+  font-size: 0.85rem;
+}
+
+.spoilage-history-heading strong {
+  color: var(--red);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .spoilage-history-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+}

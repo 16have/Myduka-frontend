@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { Store, ShieldCheck, UserPlus, KeyRound, Loader2, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
 import { useAuth, homeFor } from '@/lib/auth'
 import s from './Login.module.css'
 
@@ -47,7 +46,6 @@ export default function Login() {
     <div className={s.page}>
       <div className={s.brand}>
         <div className={s.brandLogo}>
-          <div className={s.brandIcon}><Store size={50} /></div>
           <div>
             <p className={s.brandName}>MyDuka</p>
             <p className={s.brandTagline}>Inventory Management</p>
@@ -82,7 +80,6 @@ export default function Login() {
       <div className={s.formPanel}>
         <div className={s.formBox}>
           <div className={s.mobileLogo}>
-            <div className={s.mobileLogoIcon}><Store size={18} /></div>
             <p className={s.mobileLogoName}>MyDuka</p>
           </div>
 
@@ -91,7 +88,6 @@ export default function Login() {
 
           {registeredMsg && (
             <div className={s.successAlert}>
-              <CheckCircle2 size={16} style={{ flexShrink: 0, marginTop: 2 }} />
               <span>{registeredMsg}</span>
             </div>
           )}
@@ -127,13 +123,12 @@ export default function Login() {
                 />
                 <button type="button" className={s.eyeBtn} onClick={() => setShowPassword(v => !v)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}>
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
             </div>
             <button type="submit" className={s.submitBtn} disabled={loading}>
-              {loading && <Loader2 size={16} className={s.spinner} />}
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
 

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { getInventory, recordSpoilage } from "../services/inventoryApi";
+import { getInventory, getSpoilage, recordSpoilage } from "../services/inventoryApi";
 import { useAuth } from "@/lib/auth";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorMessage from "../components/ErrorMessage";
 import BackButton from "../components/BackButton";
 import "../styles/forms.css";
 import "../styles/spoilage.css";
+import "../styles/tables.css";
 
 const REASONS = ["Broken", "Expired", "Other"];
 
@@ -20,6 +21,7 @@ const EMPTY_FORM = {
 export default function SpoilagePage() {
   const { user } = useAuth();
   const [products, setProducts] = useState([]);
+  const [records, setRecords] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(true);
@@ -31,7 +33,9 @@ export default function SpoilagePage() {
   useEffect(() => {
     async function load() {
       try {
-        setProducts(await getInventory());
+        const [inventory, spoilage] = await Promise.all([getInventory(), getSpoilage()]);
+        setProducts(inventory);
+        setRecords(spoilage);
       } catch (err) {
         setLoadError(err.message);
       } finally {
@@ -88,6 +92,7 @@ export default function SpoilagePage() {
         date: form.date,
       };
       const result = await recordSpoilage(payload, user.id);
+      setRecords(await getSpoilage());
       setSuccess(
         `Spoilage recorded. ${selectedProduct?.name} stock is now ${result.new_stock_level}.`
       );
@@ -216,6 +221,50 @@ export default function SpoilagePage() {
           {submitting ? "Saving..." : "Record Spoilage"}
         </button>
       </form>
+
+      <section className="spoilage-history">
+        <div className="spoilage-history-heading">
+          <div>
+            <h2>Recorded spoilage</h2>
+            <p>Keep a visible audit trail of broken, expired, and discarded stock.</p>
+          </div>
+          <strong>{records.length} record{records.length === 1 ? "" : "s"}</strong>
+        </div>
+
+        {records.length === 0 ? (
+          <div className="empty-state">
+            <p className="empty-state-title">No spoilage recorded yet</p>
+            <p className="empty-state-message">Submitted spoilage records will appear here.</p>
+          </div>
+        ) : (
+          <div className="table-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Reason</th>
+                  <th>Notes</th>
+                  <th>Recorded by</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {records.map((record) => (
+                  <tr key={record.id}>
+                    <td data-label="Product">{record.product_name}</td>
+                    <td data-label="Quantity">{record.quantity}</td>
+                    <td data-label="Reason">{record.reason}</td>
+                    <td data-label="Notes">{record.notes || "—"}</td>
+                    <td data-label="Recorded by">{record.clerk_name}</td>
+                    <td data-label="Date">{new Date(record.date).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

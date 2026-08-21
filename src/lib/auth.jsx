@@ -40,9 +40,9 @@ export function useAuth() {
 export function homeFor(role) {
   switch (role) {
     case 'merchant':
-      return '/merchant/admins'
+      return '/merchant'
     case 'admin':
-      return '/admin/clerks'
+      return '/admin'
     case 'clerk':
       return '/clerk'
   }

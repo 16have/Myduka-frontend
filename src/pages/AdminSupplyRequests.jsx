@@ -77,13 +77,18 @@ export default function AdminSupplyRequests() {
   }
 
   async function saveEdit(id) {
+    const quantity = Number(editForm.quantity);
+    if (!Number.isInteger(quantity) || quantity <= 0 || !editForm.reason.trim()) {
+      setActionError("Enter a positive whole quantity and a reason before saving.");
+      return;
+    }
     setUpdatingId(id);
     setActionError(null);
     try {
       const updated = await updateSupplyRequest(
         id,
         {
-          quantity: Number(editForm.quantity),
+          quantity,
           reason: editForm.reason.trim(),
           notes: editForm.notes.trim() || null,
           status: editForm.status,

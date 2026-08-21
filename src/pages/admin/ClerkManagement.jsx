@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import { UserPlus, Loader2, Copy, Check, KeyRound, Users, UserCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import UserTable from '@/components/UserTable'
 import * as api from '@/lib/api'
@@ -67,18 +66,15 @@ export default function ClerkManagement() {
           <h1 className={s.pageTitle}>Clerk Management</h1>
           <p className={s.pageDesc}>Add data-entry clerks to your store, and activate, deactivate or remove their accounts.</p>
         </div>
-        <button className={s.primaryBtn} onClick={() => setAddOpen(true)}>
-          <UserPlus size={15} /> Add Clerk
-        </button>
+        <button className={s.primaryBtn} onClick={() => setAddOpen(true)}>Add Clerk</button>
       </div>
 
       <div className={s.statsGrid}>
         {[
-          { icon: Users, label: 'Total clerks', value: clerks.length },
-          { icon: UserCheck, label: 'Active clerks', value: activeCount },
-        ].map(({ icon: Icon, label, value }) => (
+          { label: 'Total clerks', value: clerks.length },
+          { label: 'Active clerks', value: activeCount },
+        ].map(({ label, value }) => (
           <div key={label} className={s.statCard}>
-            <div className={s.statIcon}><Icon size={18} /></div>
             <div>
               <p className={s.statValue}>{loading ? '—' : value}</p>
               <p className={s.statLabel}>{label}</p>
@@ -89,7 +85,7 @@ export default function ClerkManagement() {
 
       <div className={s.section}>
         {loading
-          ? <div className={s.loadingBox}><Loader2 size={22} className={s.spinner} /></div>
+          ? <div className={s.loadingBox}>Loading clerks...</div>
           : <UserTable users={clerks} noun="clerk" busyId={busyId} onToggleActive={toggleActive} onDelete={remove} />}
       </div>
 
@@ -114,9 +110,7 @@ export default function ClerkManagement() {
                 </div>
                 <div className={s.dialogFooter}>
                   <button type="button" className={s.cancelBtn} onClick={closeDialog}>Cancel</button>
-                  <button type="submit" className={s.submitBtn} disabled={saving}>
-                    {saving && <Loader2 size={14} className={s.spinner} />} Create clerk account
-                  </button>
+                  <button type="submit" className={s.submitBtn} disabled={saving}>{saving ? 'Creating...' : 'Create clerk account'}</button>
                 </div>
               </form>
             ) : (
@@ -125,11 +119,11 @@ export default function ClerkManagement() {
                   <strong>{created.user.name}</strong> ({created.user.email}) is now an active clerk.
                 </div>
                 <div className={s.field}>
-                  <label className={s.labelRow}><KeyRound size={13} /> Temporary password</label>
+                  <label className={s.labelRow}>Temporary password</label>
                   <div className={s.inputRow}>
                     <input className={`${s.input} ${s.inputMono}`} readOnly value={created.temporaryPassword} onFocus={e => e.target.select()} />
                     <button type="button" className={s.copyBtn} onClick={copyPassword}>
-                      {copied ? <Check size={15} style={{ color: 'var(--color-primary)' }} /> : <Copy size={15} />}
+                      {copied ? 'Copied' : 'Copy'}
                     </button>
                   </div>
                   <p className={s.inputNote}>Share it with the clerk securely.</p>

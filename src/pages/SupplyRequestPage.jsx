@@ -34,7 +34,7 @@ export default function SupplyRequestPage() {
     try {
       const [productData, requestData] = await Promise.all([
         getInventory(),
-        getSupplyRequests(),
+        getSupplyRequests(user.id),
       ]);
       setProducts(productData);
       setRequests(requestData);
@@ -181,7 +181,7 @@ export default function SupplyRequestPage() {
       </form>
 
       <section className="request-list-section">
-        <h2>All Supply Requests</h2>
+          <h2>My Supply Requests</h2>
         {requests.length === 0 ? (
           <EmptyState
             title="No requests yet"

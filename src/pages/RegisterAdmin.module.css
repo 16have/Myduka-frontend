@@ -17,24 +17,6 @@
   box-shadow: var(--shadow-xl);
 }
 
-.cardLogo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.cardLogoIcon {
-  display: flex;
-  width: 2.5rem;
-  height: 2.5rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-xl);
-  background: var(--color-primary);
-  color: #fff;
-}
-
 .cardLogoName {
   font-weight: 700;
   color: var(--color-slate-900);

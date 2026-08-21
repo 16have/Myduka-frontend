@@ -1,13 +1,21 @@
 import { NavLink, Outlet, useNavigate } from 'react-router'
-import { Store, Users, UserCog, LogOut, ClipboardList, RotateCcw } from 'lucide-react'
 import { useAuth, homeFor } from '@/lib/auth'
 import { resetDemoData } from '@/lib/api'
 import s from './Layout.module.css'
 
 const NAV = [
-  { to: '/merchant/admins', label: 'Admin Management', icon: UserCog, roles: ['merchant'] },
-  { to: '/admin/clerks',    label: 'Clerk Management', icon: Users,   roles: ['admin'] },
-  { to: '/clerk',           label: 'My Workspace',     icon: ClipboardList, roles: ['clerk'] },
+  { to: '/merchant', label: 'Portfolio overview', roles: ['merchant'] },
+  { to: '/merchant/admins', label: 'Admin management', roles: ['merchant'] },
+  { to: '/admin', label: 'Store overview', roles: ['admin'] },
+  { to: '/admin/received', label: 'Received stock', roles: ['admin'] },
+  { to: '/admin/unpaid', label: 'Payments', roles: ['admin'] },
+  { to: '/admin/supply', label: 'Supply requests', roles: ['admin'] },
+  { to: '/admin/clerks', label: 'Clerk management', roles: ['admin'] },
+  { to: '/clerk', label: 'My workspace', roles: ['clerk'] },
+  { to: '/clerk/receive-stock', label: 'Receive stock', roles: ['clerk'] },
+  { to: '/clerk/stock', label: 'Stock levels', roles: ['clerk'] },
+  { to: '/clerk/spoilage', label: 'Spoilage', roles: ['clerk'] },
+  { to: '/clerk/supply-requests', label: 'Supply requests', roles: ['clerk'] },
 ]
 
 const ROLE_CLASS = {
@@ -37,7 +45,6 @@ export default function Layout() {
     <div className={s.shell}>
       <aside className={s.sidebar}>
         <div className={s.sidebarHeader}>
-          <div className={s.sidebarLogoIcon}><Store size={18} /></div>
           <div>
             <p className={s.sidebarAppName}>MyDuka</p>
             <p className={s.sidebarAppSub}>Inventory Management</p>
@@ -48,7 +55,6 @@ export default function Layout() {
           {NAV.filter(item => item.roles.includes(user.role)).map(item => (
             <NavLink key={item.to} to={item.to}
               className={({ isActive }) => `${s.navLink} ${isActive ? s.navLinkActive : ''}`}>
-              <item.icon size={16} />
               {item.label}
             </NavLink>
           ))}
@@ -64,10 +70,10 @@ export default function Layout() {
           </div>
           <div className={s.footerActions}>
             <button className={s.logoutBtn} onClick={handleLogout}>
-              <LogOut size={13} /> Sign out
+              Sign out
             </button>
             <button className={s.resetBtn} title="Reset demo data" onClick={handleResetDemo}>
-              <RotateCcw size={13} />
+              Reset demo
             </button>
           </div>
         </div>
