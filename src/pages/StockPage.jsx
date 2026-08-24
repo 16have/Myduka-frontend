@@ -28,7 +28,10 @@ export default function StockPage() {
   }
 
   useEffect(() => {
-    load();
+    function run() {
+      load();
+    }
+    run();
   }, []);
 
   const filtered = useMemo(() => {

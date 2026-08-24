@@ -25,14 +25,18 @@ export async function apiRequest(path, options = {}) {
     response = await fetch(url, config);
   } catch (networkError) {
     // Backend unreachable / CORS / offline
-    throw new Error("Cannot reach the MyDuka server. Is the Flask backend running?");
+    throw new Error("Cannot reach the MyDuka server. Is the Flask backend running?", {
+      cause: networkError,
+    });
   }
 
-  let payload = null;
+  let payload;
   try {
     payload = await response.json();
-  } catch {
-    throw new Error(`Server returned an invalid response (HTTP ${response.status}).`);
+  } catch (parseError) {
+    throw new Error(`Server returned an invalid response (HTTP ${response.status}).`, {
+      cause: parseError,
+    });
   }
 
   if (!response.ok) {

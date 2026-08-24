@@ -18,13 +18,16 @@ export default function RegisterAdmin() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (!token) {
-      setState({ kind: 'invalid', reason: 'This invitation link is missing its token.' })
-      return
+    function run() {
+      if (!token) {
+        setState({ kind: 'invalid', reason: 'This invitation link is missing its token.' })
+        return
+      }
+      api.validateInvitation(token)
+        .then(({ email }) => setState({ kind: 'ready', email }))
+        .catch((err) => setState({ kind: 'invalid', reason: err instanceof Error ? err.message : 'Invalid invitation.' }))
     }
-    api.validateInvitation(token)
-      .then(({ email }) => setState({ kind: 'ready', email }))
-      .catch((err) => setState({ kind: 'invalid', reason: err instanceof Error ? err.message : 'Invalid invitation.' }))
+    run()
   }, [token])
 
   async function onSubmit(e) {

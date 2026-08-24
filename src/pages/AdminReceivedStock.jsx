@@ -26,7 +26,10 @@ export default function AdminReceivedStock() {
   }
 
   useEffect(() => {
-    load();
+    function run() {
+      load();
+    }
+    run();
   }, []);
 
   const filtered = useMemo(

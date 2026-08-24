@@ -39,7 +39,7 @@ let spoilage = [
 ];
 
 let nextTxnId = 3;
-let nextReqId = 2;
+let nextReqId = 5;
 let nextSpoilageId = 3;
 
 function stockStatus(p) {

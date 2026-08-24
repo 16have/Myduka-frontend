@@ -24,7 +24,10 @@ export default function ClerkManagement() {
     finally { setLoading(false) }
   }, [])
 
-  useEffect(() => { refresh() }, [refresh])
+  useEffect(() => {
+    function run() { refresh() }
+    run()
+  }, [refresh])
 
   async function submit(e) {
     e.preventDefault(); setFormError(null); setSaving(true)

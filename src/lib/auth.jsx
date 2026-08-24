@@ -31,12 +31,14 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- hook colocated with its provider
 export function useAuth() {
   const ctx = useContext(AuthContext)
   if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>')
   return ctx
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- helper colocated with its provider
 export function homeFor(role) {
   switch (role) {
     case 'merchant':

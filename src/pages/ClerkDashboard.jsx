@@ -29,7 +29,10 @@ export default function ClerkDashboard() {
   }
 
   useEffect(() => {
-    loadStats();
+    function run() {
+      loadStats();
+    }
+    run();
   }, []);
 
   return (

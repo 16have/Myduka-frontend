@@ -21,7 +21,6 @@ export default function AdminSupplyRequests() {
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
-  const [responses, setResponses] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ quantity: "", reason: "", notes: "", status: "Pending", admin_response: "" });
 
@@ -38,7 +37,10 @@ export default function AdminSupplyRequests() {
   }
 
   useEffect(() => {
-    load();
+    function run() {
+      load();
+    }
+    run();
     const interval = setInterval(load, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -49,7 +51,7 @@ export default function AdminSupplyRequests() {
     try {
       const updated = await updateSupplyRequest(
         id,
-        { status, admin_response: responses[id]?.trim() || null },
+        { status, admin_response: null },
         user.id
       );
       setRequests((prev) => prev.map((r) => (r.id === id ? updated : r)));

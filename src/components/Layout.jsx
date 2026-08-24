@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router'
 import { Store, Users, UserCog, LogOut, ClipboardList, RotateCcw } from 'lucide-react'
-import { useAuth, homeFor } from '@/lib/auth'
+import { useAuth } from '@/lib/auth'
 import { resetDemoData } from '@/lib/api'
 import s from './Layout.module.css'
 
@@ -79,5 +79,3 @@ export default function Layout() {
     </div>
   )
 }
-
-export { homeFor }

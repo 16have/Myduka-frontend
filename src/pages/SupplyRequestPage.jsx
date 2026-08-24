@@ -46,7 +46,10 @@ export default function SupplyRequestPage() {
   }
 
   useEffect(() => {
-    load();
+    function run() {
+      load();
+    }
+    run();
   }, [user.id]);
 
   function handleChange(e) {

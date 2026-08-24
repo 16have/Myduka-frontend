@@ -37,7 +37,10 @@ export default function AdminDashboard() {
   }
 
   useEffect(() => {
-    load();
+    function run() {
+      load();
+    }
+    run();
   }, []);
 
   if (loading) return <LoadingSpinner message="Loading admin dashboard..." />;

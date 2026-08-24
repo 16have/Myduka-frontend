@@ -32,7 +32,10 @@ export default function AdminUnpaidStock() {
   }
 
   useEffect(() => {
-    load();
+    function run() {
+      load();
+    }
+    run();
   }, []);
 
   async function markAsPaid(id) {

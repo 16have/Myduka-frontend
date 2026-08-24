@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { Store, ShieldCheck, UserPlus, KeyRound, Loader2, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
+import { Store, Loader2, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
 import { useAuth, homeFor } from '@/lib/auth'
 import s from './Login.module.css'
 

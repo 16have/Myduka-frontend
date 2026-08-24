@@ -29,7 +29,10 @@ export default function AdminManagement() {
     } finally { setLoading(false) }
   }, [])
 
-  useEffect(() => { refresh() }, [refresh])
+  useEffect(() => {
+    function run() { refresh() }
+    run()
+  }, [refresh])
 
   async function sendInvite(e) {
     e.preventDefault(); setInviteError(null); setInviting(true)
