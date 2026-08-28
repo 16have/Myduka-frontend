@@ -71,31 +71,38 @@ export async function acceptInvite(token, username, password) {
   });
 }
 
-// --- NOT YET IMPLEMENTED ON BACKEND — stubbed to fail loudly rather than silently ---
-export async function listInvitations() {
-  throw new Error("listInvitations: backend endpoint not implemented yet.");
+export async function listInvitations(storeId) {
+  return apiRequest(`/accounts/invites/pending/?store_id=${storeId}`);
 }
-export async function listAdmins() {
-  throw new Error("listAdmins: backend endpoint not implemented yet.");
+
+export async function listAdmins(storeId) {
+  return apiRequest(`/accounts/members/?store_id=${storeId}&role=admin`);
 }
-export async function deactivateAdmin() {
-  throw new Error("deactivateAdmin: backend endpoint not implemented yet.");
+
+export async function listClerks(storeId) {
+  return apiRequest(`/accounts/members/?store_id=${storeId}&role=clerk`);
 }
-export async function activateAdmin() {
-  throw new Error("activateAdmin: backend endpoint not implemented yet.");
+
+export async function deactivateAdmin(membershipId) {
+  return apiRequest(`/accounts/members/${membershipId}/toggle-active/`, { method: "POST" });
 }
-export async function deleteAdmin() {
-  throw new Error("deleteAdmin: backend endpoint not implemented yet.");
+
+export async function activateAdmin(membershipId) {
+  return apiRequest(`/accounts/members/${membershipId}/toggle-active/`, { method: "POST" });
 }
-export async function listClerks() {
-  throw new Error("listClerks: backend endpoint not implemented yet.");
+
+export async function deleteAdmin(membershipId) {
+  return apiRequest(`/accounts/members/${membershipId}/`, { method: "DELETE" });
 }
-export async function deactivateClerk() {
-  throw new Error("deactivateClerk: backend endpoint not implemented yet.");
+
+export async function deactivateClerk(membershipId) {
+  return apiRequest(`/accounts/members/${membershipId}/toggle-active/`, { method: "POST" });
 }
-export async function activateClerk() {
-  throw new Error("activateClerk: backend endpoint not implemented yet.");
+
+export async function activateClerk(membershipId) {
+  return apiRequest(`/accounts/members/${membershipId}/toggle-active/`, { method: "POST" });
 }
-export async function deleteClerk() {
-  throw new Error("deleteClerk: backend endpoint not implemented yet.");
+
+export async function deleteClerk(membershipId) {
+  return apiRequest(`/accounts/members/${membershipId}/`, { method: "DELETE" });
 }
