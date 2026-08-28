@@ -1,103 +1,79 @@
-// Service layer for the inventory module.
-// React components NEVER call fetch directly — they use these functions.
-
 import { apiRequest } from "./api";
-import { demoApi } from "./demoData";
-
-// Demo mode is enabled ONLY via VITE_DEMO_MODE=true (used by the static
-// preview where no backend exists). In normal development this is false
-// and every function below talks to the real Flask API.
-const DEMO = import.meta.env.VITE_DEMO_MODE === "true";
-
-// Sends the logged-in user's id so the backend can record WHO did each action.
-// When your group wires in real auth, replace this header with the auth token.
-function withUser(userId) {
-  return { headers: { "X-User-Id": String(userId) } };
-}
 
 /* ------------------------------ Inventory ------------------------------ */
 
 export function getInventory() {
-  return DEMO ? demoApi.getInventory() : apiRequest("/inventory");
+  return apiRequest("/products/");
 }
 
 export function getInventoryItem(id) {
-  if (DEMO) return demoApi.getInventoryItem(id);
-  return apiRequest(`/inventory/${id}`);
+  return apiRequest(`/products/${id}/`);
 }
 
 export function getInventoryStats() {
-  return DEMO ? demoApi.getInventoryStats() : apiRequest("/inventory/stats");
+  return apiRequest("/reports/stock-summary/");
 }
 
 /* --------------------------- Receiving stock ---------------------------- */
 
-export function receiveStock(payload, userId) {
-  if (DEMO) return demoApi.receiveStock(payload, userId);
-  return apiRequest("/stock/receive", {
+export function receiveStock(payload) {
+  return apiRequest("/stock-receipts/", {
     method: "POST",
     body: JSON.stringify(payload),
-    ...withUser(userId),
   });
 }
 
 export function getReceivedStock() {
-  return DEMO ? demoApi.getReceivedStock() : apiRequest("/stock/received");
+  return apiRequest("/stock-receipts/");
 }
 
 /* ------------------------------ Spoilage -------------------------------- */
 
-export function recordSpoilage(payload, userId) {
-  if (DEMO) return demoApi.recordSpoilage(payload, userId);
-  return apiRequest("/spoilage", {
+export function recordSpoilage(payload) {
+  return apiRequest("/spoilage/", {
     method: "POST",
     body: JSON.stringify(payload),
-    ...withUser(userId),
   });
 }
 
 export function getSpoilage() {
-  if (DEMO) return demoApi.getSpoilage();
-  return apiRequest("/spoilage");
+  return apiRequest("/spoilage/");
 }
 
 /* --------------------------- Supply requests ---------------------------- */
 
-export function createSupplyRequest(payload, userId) {
-  if (DEMO) return demoApi.createSupplyRequest(payload, userId);
-  return apiRequest("/supply-requests", {
+export function createSupplyRequest(payload) {
+  return apiRequest("/supply-requests/", {
     method: "POST",
     body: JSON.stringify(payload),
-    ...withUser(userId),
   });
 }
 
-export function getSupplyRequests(userId = null) {
-  if (DEMO) return demoApi.getSupplyRequests(userId);
-  // Clerks and admins both see all requests.
-  return apiRequest("/supply-requests");
+export function getSupplyRequests() {
+  return apiRequest("/supply-requests/");
 }
 
-export function updateSupplyRequest(id, payload, userId) {
-  if (DEMO) return demoApi.updateSupplyRequest(id, payload);
-  return apiRequest(`/supply-requests/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(payload),
-    ...withUser(userId),
-  });
+export function approveSupplyRequest(id) {
+  return apiRequest(`/supply-requests/${id}/approve/`, { method: "POST" });
 }
 
-/* ------------------------------ Payments -------------------------------- */
+export function rejectSupplyRequest(id) {
+  return apiRequest(`/supply-requests/${id}/reject/`, { method: "POST" });
+}
+
+export function fulfillSupplyRequest(id) {
+  return apiRequest(`/supply-requests/${id}/fulfill/`, { method: "POST" });
+}
+
+/* ------------------------------ Payments (unpaid stock) ------------------ */
 
 export function getUnpaidPayments() {
-  return DEMO ? demoApi.getUnpaidPayments() : apiRequest("/payments/unpaid");
+  return apiRequest("/stock-receipts/?payment_status=unpaid");
 }
 
-export function updatePaymentStatus(id, status, userId) {
-  if (DEMO) return demoApi.updatePaymentStatus(id, status);
-  return apiRequest(`/payments/${id}/status`, {
-    method: "PUT",
+export function updatePaymentStatus(id, status) {
+  return apiRequest(`/stock-receipts/${id}/`, {
+    method: "PATCH",
     body: JSON.stringify({ payment_status: status }),
-    ...withUser(userId),
   });
 }
