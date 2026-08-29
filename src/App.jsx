@@ -30,6 +30,7 @@ export default function App() {
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin/register" element={<RegisterAdmin />} />
+        <Route path="/accept-invite" element={<RegisterAdmin />} />
 
         <Route
           element={

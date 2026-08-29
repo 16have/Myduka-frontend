@@ -37,3 +37,4 @@ async function remove(admin) {
   catch (err) { toast.error(err instanceof Error ? err.message : 'Delete failed.') }
   finally { setBusyId(null) }
 }
+function inviteLink(inv) { return `${window.location.origin}/accept-invite?token=${inv.token}` }

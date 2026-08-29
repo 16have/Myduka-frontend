@@ -283,3 +283,6 @@ export function resetDemoData() {
   localStorage.removeItem(SESSION_KEY)
   seedIfEmpty()
 }
+export async function validateInvitation(token) {
+  return apiRequest(`/accounts/invites/validate/?token=${encodeURIComponent(token)}`);
+}
