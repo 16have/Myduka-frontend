@@ -77,3 +77,6 @@ export function updatePaymentStatus(id, status) {
     body: JSON.stringify({ payment_status: status }),
   });
 }
+export function getInventoryStats() {
+  return apiRequest("/reports/dashboard-summary/");
+}
