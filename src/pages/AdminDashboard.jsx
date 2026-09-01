@@ -53,7 +53,7 @@ export default function AdminDashboard() {
       <header className="dashboard-hero">
         <div>
           <span className="eyebrow">Store operations / Overview</span>
-          <h1>Good morning, {user?.name || "there"}.</h1>
+          <h1>Hello, {user?.name || "there"}.</h1>
           <p className="page-subtitle">Here is the pulse of your shop, all in one place.</p>
         </div>
         <div className="hero-meta">

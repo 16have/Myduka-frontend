@@ -10,9 +10,6 @@ export function getInventoryItem(id) {
   return apiRequest(`/products/${id}/`);
 }
 
-export function getInventoryStats() {
-  return apiRequest("/reports/stock-summary/");
-}
 
 /* --------------------------- Receiving stock ---------------------------- */
 
@@ -53,18 +50,12 @@ export function getSupplyRequests() {
   return apiRequest("/supply-requests/");
 }
 
-export function approveSupplyRequest(id) {
-  return apiRequest(`/supply-requests/${id}/approve/`, { method: "POST" });
+export function updateSupplyRequest(id, payload) {
+  return apiRequest(`/supply-requests/${id}/`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
 }
-
-export function rejectSupplyRequest(id) {
-  return apiRequest(`/supply-requests/${id}/reject/`, { method: "POST" });
-}
-
-export function fulfillSupplyRequest(id) {
-  return apiRequest(`/supply-requests/${id}/fulfill/`, { method: "POST" });
-}
-
 /* ------------------------------ Payments (unpaid stock) ------------------ */
 
 export function getUnpaidPayments() {

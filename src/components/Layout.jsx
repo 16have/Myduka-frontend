@@ -1,6 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router'
 import { useAuth, homeFor } from '@/lib/auth'
-import { resetDemoData } from '@/lib/api'
 import s from './Layout.module.css'
 
 const NAV = [
@@ -32,11 +31,6 @@ export default function Layout() {
   async function handleLogout() {
     await logout()
     navigate('/login', { replace: true })
-  }
-
-  function handleResetDemo() {
-    resetDemoData()
-    window.location.href = '/login'
   }
 
   const initials = user.name.split(' ').map(n => n[0]).slice(0, 2).join('')
@@ -71,9 +65,6 @@ export default function Layout() {
           <div className={s.footerActions}>
             <button className={s.logoutBtn} onClick={handleLogout}>
               Sign out
-            </button>
-            <button className={s.resetBtn} title="Reset demo data" onClick={handleResetDemo}>
-              Reset demo
             </button>
           </div>
         </div>

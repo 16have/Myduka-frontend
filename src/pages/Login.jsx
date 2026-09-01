@@ -4,9 +4,9 @@ import { useAuth, homeFor } from '@/lib/auth'
 import s from './Login.module.css'
 
 const DEMO_ACCOUNTS = [
-  { role: 'Merchant', email: 'merchant@myduka.com', hint: 'Invites & manages admins' },
-  { role: 'Admin', email: 'admin@myduka.com', hint: 'Adds & manages clerks' },
-  { role: 'Clerk', email: 'clerk@myduka.com', hint: 'Records stock information' },
+  { role: 'Merchant', email: 'merchant@myduka.test', hint: 'Invites & manages admins' },
+  { role: 'Admin', email: 'admin@myduka.test', hint: 'Adds & manages clerks' },
+  { role: 'Clerk', email: 'clerk@myduka.test', hint: 'Records stock information' },
 ]
 
 export default function Login() {
@@ -37,7 +37,7 @@ export default function Login() {
 
   function fillDemo(demoEmail) {
     setEmail(demoEmail)
-    setPassword('password123')
+    setPassword('TestPass123')
     setError(null)
     setRegisteredMsg(null)
   }

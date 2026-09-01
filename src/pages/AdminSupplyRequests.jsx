@@ -42,16 +42,14 @@ export default function AdminSupplyRequests() {
     const interval = setInterval(load, 3000);
     return () => clearInterval(interval);
   }, []);
-
   async function decide(id, status) {
     setUpdatingId(id);
     setActionError(null);
     try {
-      const updated = await updateSupplyRequest(
-        id,
-        { status, admin_response: responses[id]?.trim() || null },
-        user.id
-      );
+      const updated = await updateSupplyRequest(id, {
+        status,
+        admin_response: responses[id]?.trim() || null,
+      });
       setRequests((prev) => prev.map((r) => (r.id === id ? updated : r)));
     } catch (err) {
       setActionError(err.message);
@@ -85,17 +83,13 @@ export default function AdminSupplyRequests() {
     setUpdatingId(id);
     setActionError(null);
     try {
-      const updated = await updateSupplyRequest(
-        id,
-        {
-          quantity,
-          reason: editForm.reason.trim(),
-          notes: editForm.notes.trim() || null,
-          status: editForm.status,
-          admin_response: editForm.admin_response.trim() || null,
-        },
-        user.id
-      );
+      const updated = await updateSupplyRequest(id, {
+        quantity,
+        reason: editForm.reason.trim(),
+        notes: editForm.notes.trim() || null,
+        status: editForm.status,
+        admin_response: editForm.admin_response.trim() || null,
+      });
       setRequests((prev) => prev.map((r) => (r.id === id ? updated : r)));
       cancelEdit();
     } catch (err) {
