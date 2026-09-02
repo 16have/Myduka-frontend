@@ -1,0 +1,116 @@
+import { useEffect, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router'
+import * as api from '@/lib/api'
+import s from './RegisterAdmin.module.css'
+
+const ROLE_LABELS = {
+  admin: 'Store Admin',
+  clerk: 'Data Entry Clerk',
+}
+
+export default function RegisterAdmin() {
+  const [params] = useSearchParams()
+  const navigate = useNavigate()
+  const token = params.get('token') ?? ''
+
+  const [state, setState] = useState({ kind: 'checking' })
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!token) {
+      setState({ kind: 'invalid', reason: 'This invitation link is missing its token.' })
+      return
+    }
+    api.validateInvitation(token)
+      .then(({ email, role, store }) => setState({ kind: 'ready', email, role, store }))
+      .catch((err) => setState({ kind: 'invalid', reason: err instanceof Error ? err.message : 'Invalid invitation.' }))
+  }, [token])
+
+  async function onSubmit(e) {
+    e.preventDefault()
+    setError(null)
+    if (password !== confirm) { setError('Passwords do not match.'); return }
+    setLoading(true)
+    try {
+      const result = await api.acceptInvite(token, username, password)
+      navigate('/login', { state: { registered: `Welcome, ${result.user.username}! Your account is active — sign in to continue.` } })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const roleLabel = state.kind === 'ready' ? (ROLE_LABELS[state.role] ?? state.role) : ''
+
+  return (
+    <div className={s.page}>
+      <div className={s.card}>
+        <div className={s.cardLogo}>
+          <div>
+            <p className={s.cardLogoName}>MyDuka</p>
+            <p className={s.cardLogoSub}>Store invitation</p>
+          </div>
+        </div>
+
+        {state.kind === 'checking' && (
+          <div className={s.checking}>
+            <p>Verifying your invitation…</p>
+          </div>
+        )}
+
+        {state.kind === 'invalid' && (
+          <div className={s.invalid}>
+            <h1 className={s.invalidTitle}>Invitation not valid</h1>
+            <p className={s.invalidReason}>{state.reason}</p>
+            <Link to="/login"><button className={s.backBtn}>Back to sign in</button></Link>
+          </div>
+        )}
+
+        {state.kind === 'ready' && (
+          <>
+            <div className={s.inviteBanner}>
+              <p>
+                You've been invited to <strong>{state.store}</strong> on MyDuka as a{' '}
+                <strong>{roleLabel}</strong> ({state.email}). Choose a username and password to activate the account.
+              </p>
+            </div>
+
+            {error && <div className={s.errorAlert}>{error}</div>}
+
+            <form onSubmit={onSubmit} className={s.form}>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="username">Username</label>
+                <input id="username" className={s.input} value={username} onChange={(e) => setUsername(e.target.value)} placeholder="johnkamau" required />
+              </div>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="password">Password</label>
+                <div className={s.passwordWrap}>
+                  <input id="password" className={`${s.input} ${s.passwordInput}`}
+                    type={showPassword ? 'text' : 'password'} value={password}
+                    onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" required minLength={8} />
+                  <button type="button" className={s.eyeBtn} onClick={() => setShowPassword(v => !v)}>
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+              </div>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="confirm">Confirm password</label>
+                <input id="confirm" className={s.input} type={showPassword ? 'text' : 'password'}
+                  value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Repeat your password" required />
+              </div>
+              <button type="submit" className={s.submitBtn} disabled={loading}>
+                {loading ? 'Activating...' : 'Activate account'}
+              </button>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
