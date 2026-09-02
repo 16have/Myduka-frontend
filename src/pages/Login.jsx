@@ -3,12 +3,6 @@ import { useLocation, useNavigate } from 'react-router'
 import { useAuth, homeFor } from '@/lib/auth'
 import s from './Login.module.css'
 
-const DEMO_ACCOUNTS = [
-  { role: 'Merchant', email: 'merchant@myduka.test', hint: 'Invites & manages admins' },
-  { role: 'Admin', email: 'admin@myduka.test', hint: 'Adds & manages clerks' },
-  { role: 'Clerk', email: 'clerk@myduka.test', hint: 'Records stock information' },
-]
-
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
@@ -33,13 +27,6 @@ export default function Login() {
     } finally {
       setLoading(false)
     }
-  }
-
-  function fillDemo(demoEmail) {
-    setEmail(demoEmail)
-    setPassword('TestPass123')
-    setError(null)
-    setRegisteredMsg(null)
   }
 
   return (
@@ -131,25 +118,6 @@ export default function Login() {
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
-
-          <div className={s.divider}>
-            <div className={s.dividerLine} />
-            <span className={s.dividerText}>Demo accounts</span>
-            <div className={s.dividerLine} />
-          </div>
-
-          <div className={s.demoList}>
-            {DEMO_ACCOUNTS.map((acc) => (
-              <button key={acc.email} type="button" className={s.demoBtn} onClick={() => fillDemo(acc.email)}>
-                <div>
-                  <p className={s.demoBtnRole}>{acc.role}</p>
-                  <p className={s.demoBtnHint}>{acc.hint}</p>
-                </div>
-                <span className={s.demoBtnEmail}>{acc.email}</span>
-              </button>
-            ))}
-          </div>
-          <p className={s.demoNote}>Demo accounts for illustration purposes only.</p>
         </div>
       </div>
     </div>
