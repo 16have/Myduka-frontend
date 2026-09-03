@@ -22,3 +22,17 @@
   color: var(--gray-500);
   font-size: 0.85rem;
 }
+
+.supply-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-width: 200px;
+}
+
+.supply-actions .response-input {
+  width: 130px;
+  min-width: unset;
+  flex-shrink: 0;
+}
