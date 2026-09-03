@@ -31,7 +31,7 @@ function ActionMenu({ user, noun, busy, onToggleActive, onDelete }) {
   )
 }
 
-export default function UserTable({ users, noun, busyId, onToggleActive, onDelete, idField = 'id' }) {
+export default function UserTable({ users, noun, busyId, onToggleActive, onDelete }) {
   const [pendingDelete, setPendingDelete] = useState(null)
   const [deleting, setDeleting] = useState(false)
 
@@ -51,38 +51,37 @@ export default function UserTable({ users, noun, busyId, onToggleActive, onDelet
               <th className={s.th}>Name</th>
               <th className={s.th}>Email</th>
               <th className={s.th}>Status</th>
+              <th className={s.th}>Added</th>
               <th className={`${s.th} ${s.thRight}`}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {users.length === 0 && (
-              <tr className={s.emptyRow}><td colSpan={4}>No {noun}s yet.</td></tr>
+              <tr className={s.emptyRow}><td colSpan={5}>No {noun}s yet.</td></tr>
             )}
-            {users.map(u => {
-              const displayName = u.username || u.name || u.email || '?'
-              const initials = displayName.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
-              const rowId = u[idField]
-              return (
-                <tr key={rowId} className={`${s.tr} ${u.is_active ? '' : s.trInactive}`}>
-                  <td className={s.td}>
-                    <div className={s.nameCell}>
-                      <div className={s.avatar}>{initials}</div>
-                      <span className={s.name}>{displayName}</span>
-                    </div>
-                  </td>
-                  <td className={`${s.td} ${s.email}`}>{u.email}</td>
-                  <td className={s.td}>
-                    {u.is_active
-                      ? <span className={s.badgeActive}><span className={`${s.dot} ${s.dotGreen}`} />Active</span>
-                      : <span className={s.badgeInactive}><span className={`${s.dot} ${s.dotGray}`} />Inactive</span>}
-                  </td>
-                  <td className={`${s.td} ${s.tdRight}`}>
-                    <ActionMenu user={u} noun={noun} busy={busyId === rowId}
-                      onToggleActive={onToggleActive} onDelete={(u) => setPendingDelete(u)} />
-                  </td>
-                </tr>
-              )
-            })}
+            {users.map(u => (
+              <tr key={u.id} className={`${s.tr} ${u.is_active ? '' : s.trInactive}`}>
+                <td className={s.td}>
+                  <div className={s.nameCell}>
+                    <div className={s.avatar}>{(u.name || u.username || '?').split(' ').map(n => n[0]).slice(0, 2).join('')}</div>
+                    <span className={s.name}>{u.name || u.username}</span>
+                  </div>
+                </td>
+                <td className={`${s.td} ${s.email}`}>{u.email}</td>
+                <td className={s.td}>
+                  {u.is_active
+                    ? <span className={s.badgeActive}><span className={`${s.dot} ${s.dotGreen}`} />Active</span>
+                    : <span className={s.badgeInactive}><span className={`${s.dot} ${s.dotGray}`} />Inactive</span>}
+                </td>
+                <td className={`${s.td} ${s.date}`}>
+                  {u.created_at ? new Date(u.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}
+                </td>
+                <td className={`${s.td} ${s.tdRight}`}>
+                  <ActionMenu user={u} noun={noun} busy={busyId === u.id}
+                    onToggleActive={onToggleActive} onDelete={(u) => setPendingDelete(u)} />
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -90,7 +89,7 @@ export default function UserTable({ users, noun, busyId, onToggleActive, onDelet
       {pendingDelete && (
         <div className={s.overlay} onClick={(e) => e.target === e.currentTarget && setPendingDelete(null)}>
           <div className={s.dialog}>
-            <h2 className={s.dialogTitle}>Delete {pendingDelete.username || pendingDelete.name}?</h2>
+            <h2 className={s.dialogTitle}>Delete {pendingDelete.name}?</h2>
             <p className={s.dialogDesc}>
               This permanently removes the {noun} account for <strong>{pendingDelete.email}</strong>.
               This action cannot be undone. Are you sure you want to continue?
