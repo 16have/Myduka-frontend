@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import UserTable from '@/components/UserTable'
 import * as api from '@/lib/api'
@@ -6,8 +7,10 @@ import { useAuth } from '@/lib/auth'
 import s from '@/styles/management.module.css'
 
 export default function ClerkManagement() {
+  const navigate = useNavigate()
   const { user } = useAuth()
   const [clerks, setClerks] = useState([])
+  const [invitations, setInvitations] = useState([])
   const [loading, setLoading] = useState(true)
   const [busyId, setBusyId] = useState(null)
 
@@ -19,7 +22,14 @@ export default function ClerkManagement() {
   const [copied, setCopied] = useState(false)
 
   const refresh = useCallback(async () => {
-    try { setClerks(await api.listClerks(user.store_id)) }
+    try {
+      const [c, i] = await Promise.all([
+        api.listClerks(user.store_id),
+        api.listInvitations(user.store_id, 'clerk'),
+      ])
+      setClerks(c)
+      setInvitations(i)
+    }
     catch (err) { toast.error(err instanceof Error ? err.message : 'Failed to load clerks.') }
     finally { setLoading(false) }
   }, [user])
@@ -63,7 +73,21 @@ export default function ClerkManagement() {
     finally { setBusyId(null) }
   }
 
+  async function removeInvitation(inv) {
+    setBusyId(`invite-${inv.id}`)
+    try {
+      await api.deleteInvitation(inv.id)
+      toast.success(`Invitation for ${inv.email} deleted.`)
+      await refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not delete invitation.')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   const activeCount = clerks.filter(c => c.is_active).length
+  const pendingInvites = invitations.filter(i => i.status === 'pending').length
 
   return (
     <div className={s.page}>
@@ -79,6 +103,7 @@ export default function ClerkManagement() {
         {[
           { label: 'Total clerks', value: clerks.length },
           { label: 'Active clerks', value: activeCount },
+          { label: 'Pending invitations', value: pendingInvites },
         ].map(({ label, value }) => (
           <div key={label} className={s.statCard}>
             <div>
@@ -87,6 +112,52 @@ export default function ClerkManagement() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className={s.section}>
+        <h2 className={s.sectionTitle}>Invitations</h2>
+        <div className={s.tableWrap}>
+          <table className={s.inviteTable}>
+            <thead>
+              <tr><th>Email</th><th>Status</th><th>Expires</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              {invitations.length === 0 && (
+                <tr><td colSpan={4} style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--color-text-light)' }}>No invitations sent yet.</td></tr>
+              )}
+              {invitations.map(inv => (
+                <tr key={inv.id}>
+                  <td style={{ fontWeight: 500 }}>{inv.email}</td>
+                  <td>
+                    {inv.status === 'pending' && <span className={s.badgePending}>Pending</span>}
+                    {inv.status === 'accepted' && <span className={s.badgeUsed}>Accepted</span>}
+                    {inv.status === 'expired' && <span className={s.badgeExpired}>Expired</span>}
+                  </td>
+                  <td style={{ color: 'var(--color-text-muted)' }}>
+                    {new Date(inv.expires_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </td>
+                  <td>
+                    <div className={s.inviteActions}>
+                      {inv.status === 'pending' && (
+                        <button className={s.openBtn} onClick={() => navigate(`/accept-invite?token=${inv.token}&role=clerk`)}>
+                          Open
+                        </button>
+                      )}
+                      <button
+                        className={s.deleteInviteBtn}
+                        onClick={() => removeInvitation(inv)}
+                        disabled={busyId === `invite-${inv.id}`}
+                      >
+                        {busyId === `invite-${inv.id}` ? 'Deleting...' : 'Delete'}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className={s.tableNote}>In production the link is emailed automatically; in this prototype you can open it directly.</p>
       </div>
 
       <div className={s.section}>
@@ -118,7 +189,7 @@ export default function ClerkManagement() {
             ) : (
               <div>
                 <div className={s.successAlert}>
-                  Invitation created for <strong>{issued.email}</strong>.
+                  Invitation created for <strong>{issued.email}</strong>. It expires in 1 hour and can only be used once.
                 </div>
                 <div className={s.field}>
                   <label className={s.labelRow}>Invitation link</label>
@@ -131,6 +202,9 @@ export default function ClerkManagement() {
                   <p className={s.inputNote}>Share it with the clerk securely.</p>
                 </div>
                 <div className={s.dialogFooter}>
+                  <button type="button" className={s.outlineBtn} onClick={() => navigate(`/accept-invite?token=${issued.token}&role=clerk`)}>
+                    Open registration page
+                  </button>
                   <button type="button" className={s.doneBtn} onClick={closeDialog}>Done</button>
                 </div>
               </div>
