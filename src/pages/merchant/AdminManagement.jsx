@@ -166,7 +166,7 @@ export default function AdminManagement() {
             ) : (
               <div>
                 <div className={s.successAlert}>
-                  Invitation created for <strong>{issued.email}</strong>. It expires in 48 hours and can only be used once.
+                  Invitation created for <strong>{issued.email}</strong>. It expires in 1 hour and can only be used once.
                 </div>
                 <div className={s.field}>
                   <label className={s.label}>Invitation link</label>
