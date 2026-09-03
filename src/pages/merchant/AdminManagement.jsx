@@ -44,6 +44,7 @@ export default function AdminManagement() {
 
   function inviteLink(inv) { return `${window.location.origin}/accept-invite?token=${inv.token}` }
 
+
   async function copyLink(inv) {
     try { await navigator.clipboard.writeText(inviteLink(inv)); setCopied(true); setTimeout(() => setCopied(false), 2000) }
     catch { toast.error('Could not copy — copy the link manually.') }
@@ -54,8 +55,8 @@ export default function AdminManagement() {
   async function toggleActive(admin) {
     setBusyId(admin.membership_id)
     try {
-      if (admin.is_active) { await api.deactivateAdmin(admin.membership_id); toast.success(`${admin.username} deactivated.`) }
-      else { await api.activateAdmin(admin.membership_id); toast.success(`${admin.username} reactivated.`) }
+      if (admin.is_active) { await api.deactivateAdmin(admin.membership_id); toast.success(`${admin.name} deactivated.`) }
+      else { await api.activateAdmin(admin.membership_id); toast.success(`${admin.name} reactivated.`) }
       await refresh()
     } catch (err) { toast.error(err instanceof Error ? err.message : 'Action failed.') }
     finally { setBusyId(null) }
@@ -63,7 +64,7 @@ export default function AdminManagement() {
 
   async function remove(admin) {
     setBusyId(admin.membership_id)
-    try { await api.deleteAdmin(admin.membership_id); toast.success(`${admin.username} removed.`); await refresh() }
+    try { await api.deleteAdmin(admin.membership_id); toast.success(`${admin.name} removed.`); await refresh() }
     catch (err) { toast.error(err instanceof Error ? err.message : 'Delete failed.') }
     finally { setBusyId(null) }
   }
@@ -100,7 +101,7 @@ export default function AdminManagement() {
         <h2 className={s.sectionTitle}>Store admins</h2>
         {loading
           ? <div className={s.loadingBox}>Loading admins...</div>
-          : <UserTable users={admins} noun="admin" busyId={busyId} onToggleActive={toggleActive} onDelete={remove} idField="membership_id" />}
+          : <UserTable users={admins} noun="admin" busyId={busyId} onToggleActive={toggleActive} onDelete={remove} />}
       </div>
 
       <div className={s.section}>
@@ -119,7 +120,7 @@ export default function AdminManagement() {
                   <td style={{ fontWeight: 500 }}>{inv.email}</td>
                   <td>
                     {inv.status === 'pending' && <span className={s.badgePending}>Pending</span>}
-                    {inv.status === 'accepted' && <span className={s.badgeUsed}>Registered</span>}
+                    {inv.status === 'accepted' && <span className={s.badgeUsed}>Accepted</span>}
                     {inv.status === 'expired' && <span className={s.badgeExpired}>Expired</span>}
                   </td>
                   <td style={{ color: 'var(--color-text-muted)' }}>
@@ -127,7 +128,7 @@ export default function AdminManagement() {
                   </td>
                   <td>
                     {inv.status === 'pending' && (
-                      <button className={s.openBtn} onClick={() => navigate(`/accept-invite?token=${inv.token}`)}>
+                      <button className={s.openBtn} onClick={() => navigate(`/accept-invite?token=${inv.token}&role=admin`)}>
                         Open
                       </button>
                     )}
@@ -178,7 +179,7 @@ export default function AdminManagement() {
                   </div>
                 </div>
                 <div className={s.dialogFooter}>
-                  <button type="button" className={s.outlineBtn} onClick={() => navigate(`/accept-invite?token=${issued.token}`)}>
+                  <button type="button" className={s.outlineBtn} onClick={() => navigate(`/accept-invite?token=${issued.token}&role=admin`)}>
                     Open registration page
                   </button>
                   <button type="button" className={s.doneBtn} onClick={closeDialog}>Done</button>

@@ -29,8 +29,8 @@ export default function MerchantDashboard() {
   if (!data) return <LoadingSpinner message="Loading portfolio overview..." />
 
   const { stats, inventory, received, unpaid } = data
-  const inventoryValue = inventory.reduce((sum, item) => sum + item.current_stock * item.buying_price, 0)
-  const retailValue = inventory.reduce((sum, item) => sum + item.current_stock * item.selling_price, 0)
+  const inventoryValue = inventory.reduce((sum, item) => sum + (item.current_stock ?? 0) * parseFloat(item.buying_price ?? 0), 0)
+  const retailValue = inventory.reduce((sum, item) => sum + (item.current_stock ?? 0) * parseFloat(item.selling_price ?? 0), 0)
   const projectedMargin = retailValue - inventoryValue
   const paidBatches = received.length - unpaid.length
   const weeklyBars = [45, 62, 52, 70, 58, 82, 74]
@@ -40,7 +40,7 @@ export default function MerchantDashboard() {
       <header className="merchant-hero">
         <div>
           <span className="merchant-eyebrow">Merchant command center</span>
-          <h1>See the whole business, {user?.name}.</h1>
+          <h1>See the whole business, {user?.username ?? user?.name}.</h1>
           <p>Compare store performance, protect your margin, and stay ahead of procurement.</p>
         </div>
         <div className="merchant-hero-actions">
@@ -72,7 +72,7 @@ export default function MerchantDashboard() {
 
         <section className="merchant-panel merchant-payment-panel">
           <div className="merchant-panel-heading"><div><span>Procurement control</span><h2>Payment status</h2></div></div>
-          <div className="merchant-payment-total">KSh {received.reduce((sum, item) => sum + item.total_amount, 0).toLocaleString()}<small> total received value</small></div>
+          <div className="merchant-payment-total">KSh {received.reduce((sum, item) => sum + parseFloat(item.total_cost ?? item.total_amount ?? 0), 0).toLocaleString()}<small> total received value</small></div>
           <div className="merchant-payment-track"><span style={{ width: `${received.length ? (paidBatches / received.length) * 100 : 0}%` }} /></div>
           <div className="merchant-payment-lines"><div><span><i className="paid-dot" /> Paid batches</span><strong>{paidBatches}</strong></div><div><span><i className="due-dot" /> Awaiting payment</span><strong>{unpaid.length}</strong></div></div>
           <button className="merchant-link" onClick={() => navigate('/admin/unpaid')}>Open payment register</button>
@@ -81,7 +81,7 @@ export default function MerchantDashboard() {
 
       <section className="merchant-panel merchant-products-panel">
         <div className="merchant-panel-heading"><div><span>Store and product performance</span><h2>Margin by product</h2></div><span className="merchant-table-note">Current stock value · KSh</span></div>
-        <div className="merchant-table-wrap"><table className="merchant-table"><thead><tr><th>Product</th><th>Store</th><th>Units</th><th>Buy value</th><th>Retail value</th><th>Margin</th><th>Status</th></tr></thead><tbody>{inventory.map(item => { const margin = (item.selling_price - item.buying_price) * item.current_stock; return <tr key={item.id}><td><strong>{item.name}</strong><small>{item.category}</small></td><td>Central Market</td><td>{item.current_stock}</td><td>KSh {(item.current_stock * item.buying_price).toLocaleString()}</td><td>KSh {(item.current_stock * item.selling_price).toLocaleString()}</td><td className="margin-value">KSh {margin.toLocaleString()}</td><td><StatusBadge status={item.stock_status} /></td></tr> })}</tbody></table></div>
+        <div className="merchant-table-wrap"><table className="merchant-table"><thead><tr><th>Product</th><th>Store</th><th>Units</th><th>Buy value</th><th>Retail value</th><th>Margin</th><th>Status</th></tr></thead><tbody>{inventory.map(item => { const units = item.current_stock ?? 0; const buy = parseFloat(item.buying_price ?? 0); const sell = parseFloat(item.selling_price ?? 0); const margin = (sell - buy) * units; return <tr key={item.id}><td><strong>{item.name}</strong><small>{item.category}</small></td><td>Central Market</td><td>{units}</td><td>KSh {(units * buy).toLocaleString()}</td><td>KSh {(units * sell).toLocaleString()}</td><td className="margin-value">KSh {margin.toLocaleString()}</td><td><StatusBadge status={item.stock_status} /></td></tr> })}</tbody></table></div>
       </section>
     </div>
   )

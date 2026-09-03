@@ -28,7 +28,7 @@ export default function AdminDashboard() {
       ]);
       setStats(statsData);
       setAttention(
-        inventory.filter((i) => i.stock_status !== "In Stock")
+        inventory.filter((i) => i.stock_status !== "in_stock")
       );
     } catch (err) {
       setError(err.message);
@@ -53,7 +53,7 @@ export default function AdminDashboard() {
       <header className="dashboard-hero">
         <div>
           <span className="eyebrow">Store operations / Overview</span>
-          <h1>Hello, {user?.name || "there"}.</h1>
+          <h1>Hello, {user?.username ?? user?.name ?? 'there'}.</h1>
           <p className="page-subtitle">Here is the pulse of your shop, all in one place.</p>
         </div>
         <div className="hero-meta">

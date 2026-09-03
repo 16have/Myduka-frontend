@@ -63,8 +63,8 @@ export default function UserTable({ users, noun, busyId, onToggleActive, onDelet
               <tr key={u.id} className={`${s.tr} ${u.is_active ? '' : s.trInactive}`}>
                 <td className={s.td}>
                   <div className={s.nameCell}>
-                    <div className={s.avatar}>{u.name.split(' ').map(n => n[0]).slice(0, 2).join('')}</div>
-                    <span className={s.name}>{u.name}</span>
+                    <div className={s.avatar}>{(u.name || u.username || '?').split(' ').map(n => n[0]).slice(0, 2).join('')}</div>
+                    <span className={s.name}>{u.name || u.username}</span>
                   </div>
                 </td>
                 <td className={`${s.td} ${s.email}`}>{u.email}</td>
@@ -74,7 +74,7 @@ export default function UserTable({ users, noun, busyId, onToggleActive, onDelet
                     : <span className={s.badgeInactive}><span className={`${s.dot} ${s.dotGray}`} />Inactive</span>}
                 </td>
                 <td className={`${s.td} ${s.date}`}>
-                  {new Date(u.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                  {u.created_at ? new Date(u.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}
                 </td>
                 <td className={`${s.td} ${s.tdRight}`}>
                   <ActionMenu user={u} noun={noun} busy={busyId === u.id}

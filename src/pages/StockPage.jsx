@@ -69,9 +69,9 @@ export default function StockPage() {
           onChange={(e) => setStatusFilter(e.target.value)}
         >
           <option value="all">All statuses</option>
-          <option value="In Stock">In Stock</option>
-          <option value="Low Stock">Low Stock</option>
-          <option value="Out of Stock">Out of Stock</option>
+          <option value="in_stock">In Stock</option>
+          <option value="low_stock">Low Stock</option>
+          <option value="out_of_stock">Out of Stock</option>
         </select>
       </div>
 

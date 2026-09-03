@@ -86,9 +86,9 @@ export default function SpoilagePage() {
     try {
       const payload = {
         product_id: Number(form.product_id),
-        quantity: Number(form.quantity),
+        quantity_spoiled: Number(form.quantity),
         reason: form.reason,
-        notes: form.notes.trim() || null,
+        notes: form.notes.trim() || "",
         date: form.date,
       };
       const result = await recordSpoilage(payload, user.id);
@@ -257,7 +257,7 @@ export default function SpoilagePage() {
                     <td data-label="Reason">{record.reason}</td>
                     <td data-label="Notes">{record.notes || "—"}</td>
                     <td data-label="Recorded by">{record.clerk_name}</td>
-                    <td data-label="Date">{new Date(record.date).toLocaleDateString()}</td>
+                    <td data-label="Date">{record.date ? new Date(record.date).toLocaleDateString() : new Date(record.created_at).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>

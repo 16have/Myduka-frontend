@@ -28,26 +28,29 @@ export default function SupplyRequestPage() {
   const [success, setSuccess] = useState(null);
   const [submitError, setSubmitError] = useState(null);
 
-  async function load() {
-    setLoading(true);
+  async function load(silent = false) {
+    if (!silent) setLoading(true);
     setLoadError(null);
     try {
       const [productData, requestData] = await Promise.all([
         getInventory(),
-        getSupplyRequests(user.id),
+        getSupplyRequests(),
       ]);
       setProducts(productData);
       setRequests(requestData);
     } catch (err) {
       setLoadError(err.message);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }
 
   useEffect(() => {
     load();
-  }, [user.id]);
+    // Poll every 10 s so clerk sees status changes made by admin
+    const interval = setInterval(() => load(true), 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -79,9 +82,9 @@ export default function SupplyRequestPage() {
     try {
       const payload = {
         product_id: Number(form.product_id),
-        quantity: Number(form.quantity),
+        quantity_requested: Number(form.quantity),
         reason: form.reason.trim(),
-        notes: form.notes.trim() || null,
+        notes: form.notes.trim() || "",
       };
       const created = await createSupplyRequest(payload, user.id);
       setRequests((prev) => [created, ...prev]);

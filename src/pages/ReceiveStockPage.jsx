@@ -81,18 +81,18 @@ export default function ReceiveStockPage() {
     try {
       const payload = {
         product_id: Number(form.product_id),
-        quantity: Number(form.quantity),
-        buying_price: Number(form.buying_price),
-        selling_price: Number(form.selling_price),
-        supplier: form.supplier.trim() || null,
+        quantity_received: Number(form.quantity),
+        unit_cost: Number(form.buying_price),
+        selling_price: Number(form.selling_price) || undefined,
+        supplier_name: form.supplier.trim() || "",
         payment_status: form.payment_status,
         date_received: form.date_received,
-        notes: form.notes.trim() || null,
+        notes: form.notes.trim() || "",
       };
       const transaction = await receiveStock(payload, user.id);
       const product = products.find((p) => p.id === payload.product_id);
       setSuccess(
-        `Stock received. Reference ${transaction.reference_number}. New stock level: ${transaction.new_stock_level}.`
+        `Stock received successfully. Reference: ${transaction.reference_number}. New stock level: ${transaction.new_stock_level ?? "updated"}.`
       );
       if (payload.payment_status === "Not Paid") {
         setLastTransaction({ ...transaction, productName: product?.name });
@@ -261,7 +261,7 @@ export default function ReceiveStockPage() {
           referenceNumber={lastTransaction.reference_number}
           product={lastTransaction.productName}
           amount={lastTransaction.total_amount}
-          userName={user.name}
+          userName={user.name ?? user.username}
           paymentStatus="Not Paid"
           issue="Stock received but payment is still pending"
         />
