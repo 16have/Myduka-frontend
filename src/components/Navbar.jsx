@@ -50,7 +50,7 @@ export default function Navbar() {
       </ul>
 
       <div className="navbar-user">
-        <span className="navbar-username">{user?.name}</span>
+        <span className="navbar-username">{user?.name ?? user?.username}</span>
       </div>
     </nav>
   );

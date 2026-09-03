@@ -127,7 +127,7 @@ export default function AdminUnpaidStock() {
           referenceNumber={whatsappRow.reference_number}
           product={whatsappRow.product_name}
           amount={whatsappRow.total_amount}
-          userName={user.name}
+          userName={user.name ?? user.username}
           paymentStatus={whatsappRow.payment_status}
           issue="Following up on unpaid supplier stock"
         />

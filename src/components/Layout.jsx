@@ -33,7 +33,8 @@ export default function Layout() {
     navigate('/login', { replace: true })
   }
 
-  const initials = user.name.split(' ').map(n => n[0]).slice(0, 2).join('')
+  const displayName = user.name ?? user.username ?? ''
+  const initials = displayName.split(' ').map(n => n[0]).slice(0, 2).join('') || '?'
 
   return (
     <div className={s.shell}>
@@ -58,7 +59,7 @@ export default function Layout() {
           <div className={s.userRow}>
             <div className={s.avatar}>{initials}</div>
             <div className={s.userInfo}>
-              <p className={s.userName}>{user.name}</p>
+              <p className={s.userName}>{displayName}</p>
               <span className={`${s.roleBadge} ${ROLE_CLASS[user.role]}`}>{user.role}</span>
             </div>
           </div>

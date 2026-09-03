@@ -1,112 +1,175 @@
-import { apiRequest } from "@/services/api";
+/**
+ * MyDuka — Authentication & User Management API layer
+ * Connects to the real Django backend via fetch().
+ */
 
-export const API_BASE_URL = "/api";
-const SESSION_KEY = "myduka_session";
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
-function saveSession(session) {
-  if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  else localStorage.removeItem(SESSION_KEY);
-}
+const SESSION_KEY = 'myduka_session'
+
+// ─── Session helpers ────────────────────────────────────────────────────────
 
 export function getSession() {
-  const raw = localStorage.getItem(SESSION_KEY);
-  if (!raw) return null;
+  const raw = localStorage.getItem(SESSION_KEY)
+  if (!raw) return null
   try {
-    return JSON.parse(raw);
+    return JSON.parse(raw)
   } catch {
-    return null;
+    return null
   }
 }
 
+function saveSession(session) {
+  if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session))
+  else localStorage.removeItem(SESSION_KEY)
+}
+
+function getToken() {
+  return getSession()?.access_token ?? null
+}
+
+// ─── Core fetch wrapper ──────────────────────────────────────────────────────
+
+async function request(path, options = {}) {
+  const token = getToken()
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
+    ...options,
+  }
+
+  let response
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, config)
+  } catch {
+    throw new Error('Cannot reach the MyDuka server. Is the Django backend running?')
+  }
+
+  // 204 No Content — nothing to parse
+  if (response.status === 204) return null
+
+  let payload = null
+  try {
+    payload = await response.json()
+  } catch {
+    payload = null
+  }
+
+  if (!response.ok) {
+    const message =
+      payload?.detail ||
+      payload?.message ||
+      (typeof payload === 'object' && payload !== null
+        ? Object.values(payload).flat().join(' ')
+        : null) ||
+      `Request failed (HTTP ${response.status}).`
+    const err = new Error(message)
+    err.status = response.status
+    err.errors = payload
+    throw err
+  }
+
+  return payload
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
 export async function login(email, password) {
-  const data = await apiRequest("/token/", {
-    method: "POST",
+  const data = await request('/token/', {
+    method: 'POST',
     body: JSON.stringify({ email, password }),
-  });
+  })
+  // Backend returns: { access, refresh, user: { id, username, email, role, is_active, store_id, store_name } }
   const session = {
     access_token: data.access,
     refresh_token: data.refresh,
-    user: { ...data.user, name: data.user.username }, // no `name` field on backend User model yet — using username as display name
-  };
-  saveSession(session);
-  return session;
+    user: data.user,
+  }
+  saveSession(session)
+  return session
 }
 
 export async function logout() {
-  saveSession(null);
+  saveSession(null)
 }
 
 export async function me() {
-  const session = getSession();
-  if (!session) throw new Error("Not authenticated.");
-  return session.user;
+  return request('/accounts/members/me/')
 }
 
-export async function registerMerchant(payload) {
-  // payload: { username, email, password, store_name, store_location, store_phone, store_email }
-  return apiRequest("/accounts/register/", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+// ─── Invitations ─────────────────────────────────────────────────────────────
+
+export async function inviteAdmin(email, store_id) {
+  return request('/accounts/invites/', {
+    method: 'POST',
+    body: JSON.stringify({ email, store_id, role: 'admin' }),
+  })
 }
 
-export async function inviteAdmin(email, storeId) {
-  return apiRequest("/accounts/invites/", {
-    method: "POST",
-    body: JSON.stringify({ email, store_id: storeId, role: "admin" }),
-  });
+export async function inviteClerk(email, store_id) {
+  return request('/accounts/invites/', {
+    method: 'POST',
+    body: JSON.stringify({ email, store_id, role: 'clerk' }),
+  })
 }
 
-export async function inviteClerk(email, storeId) {
-  return apiRequest("/accounts/invites/", {
-    method: "POST",
-    body: JSON.stringify({ email, store_id: storeId, role: "clerk" }),
-  });
+export async function listInvitations(store_id) {
+  return request(`/accounts/invites/pending/?store_id=${store_id}`)
 }
 
 export async function validateInvitation(token) {
-  return apiRequest(`/accounts/invites/validate/?token=${encodeURIComponent(token)}`);
+  return request(`/accounts/invites/validate/?token=${token}`)
+}
+
+export async function registerAdmin(token, name, password) {
+  return request('/accounts/invites/accept/', {
+    method: 'POST',
+    body: JSON.stringify({ token, username: name, password }),
+  })
 }
 
 export async function acceptInvite(token, username, password) {
-  return apiRequest("/accounts/invites/accept/", {
-    method: "POST",
+  return request('/accounts/invites/accept/', {
+    method: 'POST',
     body: JSON.stringify({ token, username, password }),
-  });
+  })
 }
 
-export async function listInvitations(storeId) {
-  return apiRequest(`/accounts/invites/pending/?store_id=${storeId}`);
+// ─── Admins (store members with role=admin) ───────────────────────────────────
+
+export async function listAdmins(store_id) {
+  return request(`/accounts/members/?store_id=${store_id}&role=admin`)
 }
 
-export async function listAdmins(storeId) {
-  return apiRequest(`/accounts/members/?store_id=${storeId}&role=admin`);
+export async function activateAdmin(membership_id) {
+  return request(`/accounts/members/${membership_id}/toggle-active/`, { method: 'POST' })
 }
 
-export async function listClerks(storeId) {
-  return apiRequest(`/accounts/members/?store_id=${storeId}&role=clerk`);
+export async function deactivateAdmin(membership_id) {
+  return request(`/accounts/members/${membership_id}/toggle-active/`, { method: 'POST' })
 }
 
-export async function deactivateAdmin(membershipId) {
-  return apiRequest(`/accounts/members/${membershipId}/toggle-active/`, { method: "POST" });
+export async function deleteAdmin(membership_id) {
+  return request(`/accounts/members/${membership_id}/`, { method: 'DELETE' })
 }
 
-export async function activateAdmin(membershipId) {
-  return apiRequest(`/accounts/members/${membershipId}/toggle-active/`, { method: "POST" });
+// ─── Clerks (store members with role=clerk) ───────────────────────────────────
+
+export async function listClerks(store_id) {
+  return request(`/accounts/members/?store_id=${store_id}&role=clerk`)
 }
 
-export async function deleteAdmin(membershipId) {
-  return apiRequest(`/accounts/members/${membershipId}/`, { method: "DELETE" });
+export async function activateClerk(membership_id) {
+  return request(`/accounts/members/${membership_id}/toggle-active/`, { method: 'POST' })
 }
 
-export async function deactivateClerk(membershipId) {
-  return apiRequest(`/accounts/members/${membershipId}/toggle-active/`, { method: "POST" });
+export async function deactivateClerk(membership_id) {
+  return request(`/accounts/members/${membership_id}/toggle-active/`, { method: 'POST' })
 }
 
-export async function activateClerk(membershipId) {
-  return apiRequest(`/accounts/members/${membershipId}/toggle-active/`, { method: "POST" });
-}
-
-export async function deleteClerk(membershipId) {
-  return apiRequest(`/accounts/members/${membershipId}/`, { method: "DELETE" });
+export async function deleteClerk(membership_id) {
+  return request(`/accounts/members/${membership_id}/`, { method: 'DELETE' })
 }

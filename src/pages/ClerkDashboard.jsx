@@ -38,7 +38,7 @@ export default function ClerkDashboard() {
         <BackButton to="/login" />
         <h1>Inventory Dashboard</h1>
         <p className="page-subtitle">
-          Welcome back, <strong>{user?.name}</strong>. Here is the stock
+          Welcome back, <strong>{user?.username ?? user?.name}</strong>. Here is the stock
           overview.
         </p>
       </header>

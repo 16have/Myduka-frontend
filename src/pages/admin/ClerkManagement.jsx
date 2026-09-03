@@ -49,8 +49,8 @@ export default function ClerkManagement() {
   async function toggleActive(clerk) {
     setBusyId(clerk.membership_id)
     try {
-      if (clerk.is_active) { await api.deactivateClerk(clerk.membership_id); toast.success(`${clerk.username} deactivated.`) }
-      else { await api.activateClerk(clerk.membership_id); toast.success(`${clerk.username} reactivated.`) }
+      if (clerk.is_active) { await api.deactivateClerk(clerk.membership_id); toast.success(`${clerk.name} deactivated.`) }
+      else { await api.activateClerk(clerk.membership_id); toast.success(`${clerk.name} reactivated.`) }
       await refresh()
     } catch (err) { toast.error(err instanceof Error ? err.message : 'Action failed.') }
     finally { setBusyId(null) }
@@ -58,7 +58,7 @@ export default function ClerkManagement() {
 
   async function remove(clerk) {
     setBusyId(clerk.membership_id)
-    try { await api.deleteClerk(clerk.membership_id); toast.success(`${clerk.username} removed.`); await refresh() }
+    try { await api.deleteClerk(clerk.membership_id); toast.success(`${clerk.name} removed.`); await refresh() }
     catch (err) { toast.error(err instanceof Error ? err.message : 'Delete failed.') }
     finally { setBusyId(null) }
   }
@@ -92,7 +92,7 @@ export default function ClerkManagement() {
       <div className={s.section}>
         {loading
           ? <div className={s.loadingBox}>Loading clerks...</div>
-          : <UserTable users={clerks} noun="clerk" busyId={busyId} onToggleActive={toggleActive} onDelete={remove} idField="membership_id" />}
+          : <UserTable users={clerks} noun="clerk" busyId={busyId} onToggleActive={toggleActive} onDelete={remove} />}
       </div>
 
       {addOpen && (
