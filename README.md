@@ -220,3 +220,10 @@ npm run test
 ## Notes
 
 This project is a frontend application intended to support the full MyDuka operational flow. It is best used alongside the corresponding backend service, which provides authentication, invitation management, and inventory data. The current front-end layer is structured to make that backend integration straightforward and maintainable.
+
+## Contributors
+- Kelvin Tullo
+- Gabriel Ngige
+- Elias Kosh
+- Joshua Mbili
+- George Njenga
