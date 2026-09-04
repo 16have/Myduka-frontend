@@ -25,7 +25,7 @@ export default function AdminManagement() {
     try {
       const [a, i] = await Promise.all([
         api.listAdmins(user.store_id),
-        api.listInvitations(user.store_id),
+        api.listInvitations(user.store_id, 'admin'),
       ])
       setAdmins(a); setInvitations(i)
     } catch (err) {
@@ -69,6 +69,19 @@ export default function AdminManagement() {
     finally { setBusyId(null) }
   }
 
+  async function removeInvitation(inv) {
+    setBusyId(`invite-${inv.id}`)
+    try {
+      await api.deleteInvitation(inv.id)
+      toast.success(`Invitation for ${inv.email} deleted.`)
+      await refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not delete invitation.')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   const activeCount = admins.filter(a => a.is_active).length
   const pendingInvites = invitations.filter(i => i.status === 'pending').length
 
@@ -109,7 +122,7 @@ export default function AdminManagement() {
         <div className={s.tableWrap}>
           <table className={s.inviteTable}>
             <thead>
-              <tr><th>Email</th><th>Status</th><th>Expires</th><th>Link</th></tr>
+              <tr><th>Email</th><th>Status</th><th>Expires</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {invitations.length === 0 && (
@@ -127,11 +140,20 @@ export default function AdminManagement() {
                     {new Date(inv.expires_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </td>
                   <td>
-                    {inv.status === 'pending' && (
-                      <button className={s.openBtn} onClick={() => navigate(`/accept-invite?token=${inv.token}&role=admin`)}>
-                        Open
+                    <div className={s.inviteActions}>
+                      {inv.status === 'pending' && (
+                        <button className={s.openBtn} onClick={() => navigate(`/accept-invite?token=${inv.token}&role=admin`)}>
+                          Open
+                        </button>
+                      )}
+                      <button
+                        className={s.deleteInviteBtn}
+                        onClick={() => removeInvitation(inv)}
+                        disabled={busyId === `invite-${inv.id}`}
+                      >
+                        {busyId === `invite-${inv.id}` ? 'Deleting...' : 'Delete'}
                       </button>
-                    )}
+                    </div>
                   </td>
                 </tr>
               ))}

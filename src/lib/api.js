@@ -105,19 +105,24 @@ export async function me() {
 export async function inviteAdmin(email, store_id) {
   return request('/accounts/invites/', {
     method: 'POST',
-    body: JSON.stringify({ email, store_id, role: 'admin' }),
+    body: JSON.stringify({ email, store_id, role: 'admin', expires_in_hours: 1 }),
   })
 }
 
 export async function inviteClerk(email, store_id) {
   return request('/accounts/invites/', {
     method: 'POST',
-    body: JSON.stringify({ email, store_id, role: 'clerk' }),
+    body: JSON.stringify({ email, store_id, role: 'clerk', expires_in_hours: 1 }),
   })
 }
 
-export async function listInvitations(store_id) {
-  return request(`/accounts/invites/pending/?store_id=${store_id}`)
+export async function listInvitations(store_id, role) {
+  const roleQuery = role ? `&role=${encodeURIComponent(role)}` : ''
+  return request(`/accounts/invites/pending/?store_id=${store_id}${roleQuery}`)
+}
+
+export async function deleteInvitation(invitation_id) {
+  return request(`/accounts/invites/${invitation_id}/`, { method: 'DELETE' })
 }
 
 export async function validateInvitation(token) {
