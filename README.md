@@ -2,6 +2,8 @@
 
 MyDuka Frontend is the React + Vite client for a role-based inventory and operations dashboard used by merchants, store admins, and clerks. The app enforces access by role, uses a JWT-style session stored in local storage, and connects to the MyDuka backend API for authentication, member management, and inventory workflows.
 
+
+
 ## Overview
 
 This frontend focuses on the user experience for a multi-role retail workflow:
